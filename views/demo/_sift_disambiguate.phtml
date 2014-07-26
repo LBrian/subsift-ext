@@ -1,0 +1,34 @@
+[% IF errors %]
+  <p>
+    <strong>WARNING:</strong>
+    The data submitted in A.2 contains invalid lines that will be ignored.
+  </p>
+  <ul>
+  [% FOREACH error IN errors %]
+    <li>[% error %]</li>
+  [% END %]
+  </ul>
+[% END %]
+
+
+[% IF choices %]
+  <p>
+  The following are names for which multiple matches were found in the DBLP author pages.
+  You need to manually disambiguate the following multiple matches to leave only the relevant names selected.
+  Note that some authors have more than one DBLP page, for example with or without their middle initial, and so it can be valid to select more than one name.
+  </p>
+[% END %]
+
+<input type="hidden" name="results_list" value="[% FOREACH reviewer IN reviewers %][% FOREACH option IN reviewer %]
+  name[%- option.id %], [% option.name %], [% option.description %], [% option.uri %]
+[% END %][% END %]"/>
+
+[% FOREACH reviewer IN reviewers %]
+  <h4>[% reviewer.0.description %]</h4>
+  [% FOREACH option IN reviewer %]
+    <input type="checkbox" name="name[% option.id %]" id="id[% option.id %]"[% IF option.checked %] checked="checked"[% END %]/>
+    <label for="id[% option.id %]">[% option.name %]</label>
+    &nbsp;<a href="[% option.uri %]" class="external" target="_new">view</a>
+    <br/>
+  [% END %]
+[% END %]

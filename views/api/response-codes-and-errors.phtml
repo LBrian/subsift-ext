@@ -1,0 +1,62 @@
+[% page.title = 'API: Response Codes and Errors' 
+   page.tab = 'api'
+%]
+
+<h2>HTTP Status Codes</h2>
+
+<p>The SubSift API attempts to return appropriate <a href="http://en.wikipedia.org/wiki/List_of_HTTP_status_codes" class="external">HTTP status codes</a> for every request. It is possible to suppress HTTP response codes for the REST API.</p>
+
+<ul>
+<li><strong>200 OK</strong>: The request succeeded.</li>
+<li><strong>201 Created</strong>: The request has been fulfilled and resulted in a new resource being created.</li>
+<li><strong>202 Accepted</strong>: The request has been accepted for processing, but the processing has not been completed. The request might or might not eventually be acted upon, as it might be disallowed when processing actually takes place.</li>
+<li><strong>304 Not Modified</strong>: Indicates the resource has not been modified since last requested.</li>
+<li><strong>400 Bad Request</strong>: The request contains bad syntax or cannot be fulfilled. An accompanying error message will explain why.</li>
+<li><strong>401 Unauthorized</strong>: The request <a href="[% site.url %]/api/authentication">authentication credentials</a> were missing or incorrect.</li>
+<li><strong>403 Forbidden</strong>: The request is understood, but it has been refused.  An accompanying error message will explain why.</li>
+<li><strong>404 Not Found</strong>: The requested resource could not be found.</li>
+<li><strong>406 Not Acceptable</strong>: The requested resource is not available in the format requested.</li>
+<li><strong>500 Internal Server Error</strong>: Something is broken. Please contact us so that we can investigate.</li>
+<li><strong>502 Bad Gateway</strong>: SubSift is down or being upgraded.</li>
+<li><strong>503 Service Unavailable</strong>: SubSift is overloaded with requests. Try again later.</li>
+</ul>
+
+
+<h2>Error Messages</h2>
+
+<p>The SubSift API returns error messages in the requested format (e.g. xml or json).</p>
+
+<h3>JSON example:</h3>
+<blockquote>
+<pre>[% FILTER html -%]
+{
+   "error" : "No such bookmarks folder: foobar"
+}
+[% END %]</pre>
+</blockquote>
+
+<h3>TERMS example:</h3>
+<blockquote>
+<pre>[% FILTER html -%]
+result(error('No such bookmarks folder: foobar')).
+[% END %]</pre>
+</blockquote>
+
+<h3>XML example:</h3>
+<blockquote>
+<pre>[% FILTER html -%]
+<?xml version="1.0" encoding="UTF-8"?>
+<result>
+  <error>No such bookmarks folder: foobar</error>
+</result>
+[% END %]</pre>
+</blockquote>
+
+<h3>YAML example:</h3>
+<blockquote>
+<pre>[% FILTER html -%]
+---
+error : 'No such bookmarks folder: foobar'
+[% END %]</pre>
+</blockquote>
+

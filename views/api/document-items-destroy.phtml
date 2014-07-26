@@ -1,0 +1,62 @@
+[% page.title = 'API Method: documents folder destroy'
+   page.tab = 'api'
+%]
+
+<h2>DELETE /:user_id/documents/:folder_id/items/:item_id</h2>
+
+<p>
+Deletes the specified document item. 
+Returns a representation of the deleted document item with a 200 OK HTTP status code.
+To delete multiple document items at once, see <a href="[% site.url %]/api/document-items-destroy-all">document items destroy (all)</a>.
+</p>
+
+<h3>URL:</h3>
+<code>[% site.url %]/<em>user_id</em>/documents/<em>folder_id</em>/items/<em>item_id</em>.<em>format</em></code>
+
+<h3>Formats (<a href="formats">about return formats</a>):</h3>
+<code>[% INCLUDE 'api/_formats.phtml' %]</code>
+
+<h3>HTTP Methods (<a href="http-methods">about HTTP methods</a>):</h3>
+<code>DELETE</code>
+<p>Clients that can not issue <code>DELETE</code> requests can use <code>POST</code> with the added parameter <code>_method=DELETE</code></p>
+
+<h3>Requires Authentication (<a href="authentication">about authentication</a>):</h3>
+<code>true</code>
+
+<h3>Parameters:</h3>
+<ul>
+<li><code>folder_id</code>.  Required. The ID of the document folder containing the item to destroy.</li>
+<li><code>item_id</code>.  Required. The ID of the document item to destroy.</li>
+<li><code><em>full</em></code>.  Optional. Whether to include the <code>text</code> data in the returned representation of the item.
+Values can be either <code>1</code> for true or <code>0</code> for false. The default is <code>0</code>.
+<ul>
+<li>Example: <code>[% site.url %]/kdd09/documents/pc/items/Peter%20Flach.xml</code>
+</ul>
+</li>
+</ul>
+
+<h3>Usage Examples:</h3>
+<blockquote>
+<h4>cURL (<a href="curl">about cURL</a>):</h4>
+<code>curl -X DELETE -H "Token:mytoken" [% site.url %]/kdd09/documents/pc/items/Peter%20Flach.xml</code><br/>
+</blockquote>
+
+<h3>Response (<a href="return-values">about return values</a>):</h3>
+<blockquote>
+<h4>XML example:</h4>
+<pre>[% FILTER html -%]
+<?xml version="1.0" encoding="UTF-8"?>
+<result>
+  <item>
+    <name>Peter Flach</name>
+    <created>1266788131</created>
+    <description>Some research interests of Peter Flach</description>
+    <id>Peter_Flach</id>
+    <modified>1266788131</modified>
+    <source>text</source>
+  </item>
+</result>
+[% END %]</pre>
+</blockquote>
+
+

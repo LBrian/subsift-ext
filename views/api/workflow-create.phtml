@@ -1,0 +1,102 @@
+[% page.title = 'API Method: workflow create'
+   page.tab = 'api'
+%]
+
+<h2>POST /:user_id/workflow/:workflow_id</h2>
+
+<p>
+Creates and enacts (i.e. runs) the supplied sequence of REST API commands in the specified user account.
+Returns the string "ok" with a 201 Created HTTP status code. 
+The method returns immediately but the workflow may take a long while to execute (possibly minutes or hours).
+Workflows are automatically destroyed once completed.
+Creating a workflow with the same <code>workflow_id</code> as an existing workflow (in the same user account) will halt and replace the existing workflow if not already completed.
+</p>
+<p>
+  Note that this is a minimalist workflow language and enactment system; it is no replacement for a full scientific workflow system and is only provided as a convenience for simple use cases: in particular to enable Web 2.0 applications to easily initiate long-running tasks (e.g. harvesting web pages) and multistep tasks (e.g. import documents and then profile them once the importing has finished) without having to use other systems.
+</p>
+
+<h3>URL:</h3>
+<code>[% site.url %]/<em>user_id</em>/workflow/<em>workflow_id.<em>format</em></code>
+
+<h3>Formats (<a href="formats">about return formats</a>):</h3>
+<code>[% INCLUDE 'api/_formats.phtml' %]</code>
+
+<h3>HTTP Methods (<a href="http-methods">about HTTP methods</a>):</h3>
+<code>POST</code>
+
+<h3>Requires Authentication (<a href="authentication">about authentication</a>):</h3>
+<code>true</code>
+
+<h3>Parameters:</h3>
+<ul>
+<li><code>workflow_id</code>.  Required. The ID of the workflow to create in the specificed user account.</li>
+<li><code>commands</code>.  Required. A list of SubSift REST API commands in csv format, where each row specifies the <code>flow</code>, <code>method</code>, <code>url</code> and (optionally) <code>parameters</code> of a single API command. The <code>flow</code> determines the behaviour in response to the HTPP status code and is one of:
+<ul>
+  <li><code>+</code> where a <em>success</em> HTTP status code is required to continue to the next command;</li>
+  <li><code>-</code> where a <em>failure</em> HTTP status code is required to continue to the next command;</li>
+  <li><code>?</code> where the HTTP status code is ignored and enactment continues to the next command regardless;</li>
+  <li><code>*</code> where this command is repeated until a <em>failure</em> HTTP status code is returned and then enactment continues to the next command. This may only be used for HTTP read-only methods (i.e. <code>get</code> and <code>head</code>) and should be used with caution to avoid infinite workflows.</li>
+</ul>
+The method is one of: <code>get, delete, head, post, put</code>. 
+The <code>parameters</code> are none or more <code>key=value</code> pairs with each pair delimited by commas. To specify a parameter value with line breaks or commas in, enclose the entire parameter pair (<strong>not just the value</strong>) in quotes - i.e. <code>"key=value"</code>, not <code>key="value"</code>. Otherwise, quotes are optional. Use normal csv double quotes to include a single quote in the value (e.g. <code>"name=Mike ""Mobile"" Jones"</code> defines a pair with key <code>name</code> and value <code>Mike "Mobile" Jones</code>).
+<ul>
+<li>Example: <code>[% site.url %]/kdd09/workflow/myflow.xml<br/>
+commands=<span class="cr"></span><br/>
+?, delete, documents/pc<br/>
++, post, documents/pc, description=Programme Committee, mode=private<br/>
++, post, documents/pc/import/pc<br/>
+*, head, documents/pc/import/pc<br/>
+?, delete, profiles/pc<br/>
++, post, profiles/pc/from/pc, "ngrams=1,2", limit=3<br/>
+?, delete, profiles/abstracts<br/>
++, post, profiles/abstracts/from/abstracts, "ngrams=1,2", limit=3<br/>
+?, delete, matches/pc_abstracts<br/>
++, post, matches/pc_abstracts/profiles/pc/with/abstracts<br/>
+</code>
+<br/>
+The above example deletes and creates/recreates a documents folder called "pc" into which it imports the bookmarks from bookmarks folder "pc". It then profiles the "pc" documents folder. A similar sequence then follows for the "abstracts". Finally, a match is performed between the "pc" and "abstracts" profile folders to create the "pc_abstracts" matches folder.
+Each command will wait for the previous command to complete - including waiting for all the bookmarks imported into the "pc" folder to be harvested by the web robot (which may take minutes or hours). Note that it is not necessary to specify the implicit "<code>[% site.url %]/kdd09/</code>" prefix for each <code>url</code>. Likewise, the authorisation token is not required for each command.
+</li>
+</ul>
+</li>
+</ul>
+
+<h3>Usage Examples:</h3>
+<blockquote>
+<h4>cURL (<a href="curl">about cURL</a>):</h4>
+cURL is not particularly convenient for submitting multi-line data because the arguments have to be uri encoded so that, for example new lines become <code>%0A</code> and special uri characters like <code>+</code> become <code>%2B</code> or <code>&quot;</code> become <code>%22</code>.<br/><br/>
+<code>curl -X POST -H "Token:mytoken" -d "commands=<span class="cr"></span><br/>
+?,delete,bookmarks/pc%0A<span class="cr"></span><br/>
+%2B,post,%20bookmarks/pc,description=PC%20homepages,mode=private,%22items_list=%0A<span class="cr"></span><br/>
+Peter%20Flach,http://www.cs.bris.ac.uk/~flach%0A<span class="cr"></span><br/>
+Simon%20Price,http://www.cs.bris.ac.uk/~price%22%0A<span class="cr"></span><br/>
+?,delete,documents/pc%0A%2B,post,documents/pc,description=PC,mode=private%0A<span class="cr"></span><br/>
+%2B,post,documents/pc/import/pc%0A<span class="cr"></span><br/>
+*,head,documents/pc/import/pc%0A<span class="cr"></span><br/>
+%2B,post,profiles/pc/recalculate" <span class="cr"></span><br/>
+[% site.url %]/kdd09/workflow/myflow.xml
+</code>
+<p>For the sake of clarity, the submitted commands in the above example are the uri encoded version of the following unencoded text:</p>
+<code>?,delete,bookmarks/pc<br/>
++,post, bookmarks/pc,description=PC homepages,mode=private,"items_list=<br/>
+Peter Flach,http://www.cs.bris.ac.uk/~flach<br/>
+Simon Price,http://www.cs.bris.ac.uk/~price"<br/>
+?,delete,documents/pc<br/>
++,post,documents/pc,description=PC,mode=private<br/>
++,post,documents/pc/import/pc<br/>
+*,head,documents/pc/import/pc<br/>
++,post,profiles/pc/recalculate</code>
+</blockquote>
+
+<h3>Response (<a href="return-values">about return values</a>):</h3>
+<blockquote>
+<h4>XML example:</h4>
+<pre>[% FILTER html -%]
+<?xml version="1.0" encoding="UTF-8"?>
+<result>
+  <value>ok</value>
+</result>
+[% END %]</pre>
+</blockquote>
+
+

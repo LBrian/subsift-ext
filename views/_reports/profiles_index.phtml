@@ -1,0 +1,17 @@
+<h2>Profiles Report: [% report.id %]</h2>
+
+<div id="content">
+
+<p>
+[% report.description %]
+</p>
+
+<ul>
+[% FOREACH profile IN profile_items %]
+  <li><a href="[% site.url %]/[% site.user_id %]/reports/[% profiles.id %]/[% profile.filename %]">[% profile.description %]</a></li>
+[% END %]
+</ul>
+
+<br/>
+<br/>
+</div>

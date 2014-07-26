@@ -1,0 +1,83 @@
+[% page.title = 'API Method: document items import'
+   page.tab = 'api'
+%]
+
+<h2>POST /:user_id/documents/:folder_id/import/:bookmarks_id</h2>
+
+<p>
+Requests the creation of multiple document items in the specified documents folder of the specified user account.
+Returns an OK message with a 202 Accepted HTTP status code.
+</p>
+<p>
+Each item is created by fetching the web page of each bookmark url in the specified bookmarks folder.
+Optionally, by specifying <code>depth</code> values greater than the default of zero, web pages linked to by any <code>&lt;a href="..."&gt;</code> elements in the bookmarked web page and its child pages will also be fetched and appended to the text of that document. The maximum number of pages fetched at any one depth is specified by the <code>breadth</code> value. These optional "crawl" parameters allow a set of linked pages to be fetched rather than a single web page per bookmark, but clearly the amount of text fetched will increase (possibly dramatically) as <code>depth</code> and <code>breadth</code> are increased.
+</p>
+<p>
+Fetching web pages takes time and so this import method just adds the list of urls to be fetched to
+the SubSift web harvester robot that runs continuously as a background task. Once a page is fetched by the robot,
+a document item is created in the specified documents folder. Pages are fetched at a maximum rate of one
+per second although in reality each page may take several seconds to fetch, so a long list of bookmarks
+can take an hour or more until all the pages are turned into the document items requested by this SubSift API method.
+</p>
+<p>
+Note that not all web sites permit the use of robots (also known as "bots", "webots" and "crawlers") on all or parts of their site.
+The SubSift harvester robot checks and obeys the rules defined in the <code>robots.txt</code> of each site it visits and 
+will not retrieve any page denied to robot access. Please try to avoid heavy mining of any single site or the SubSift robot
+may get permanently banned from that site.
+</p>
+
+<h3>URL:</h3>
+<code>[% site.url %]/<em>user_id</em>/documents/<em>folder_id</em>/import/<em>bookmarks_id</em>.<em>format</em></code>
+
+<h3>Formats (<a href="formats">about return formats</a>):</h3>
+<code>[% INCLUDE 'api/_formats.phtml' %]</code>
+
+<h3>HTTP Methods (<a href="http-methods">about HTTP methods</a>):</h3>
+<code>POST</code>
+
+<h3>Requires Authentication (<a href="authentication">about authentication</a>):</h3>
+<code>true</code>
+
+<h3>Parameters:</h3>
+<ul>
+<li><code>folder_id</code>.  Required. The ID of the documents folder to create the document items in.</li>
+<li><code>bookmarks_id</code>.  Optional. The ID of the bookmarks folder id to use to create the document items.
+Defaults to the same value as <code>folder_id</code>.
+<ul>
+<li>Example: <code>[% site.url %]/kdd09/documents/pc/import/pc</code><br/></li>
+<li>Or equivalently, <code>[% site.url %]/kdd09/documents/pc/import</code><br/></li>
+</ul>
+</li>
+<li><code><em>depth</em></code>.  Optional. Maximum number of hyperlinks steps to follow from each bookmarked url.
+Values can be from <code>0</code> to <code>2</code>. The default is <code>0</code>.</li>
+<li><code><em>breadth</em></code>.  Optional. Maximum number of hyperlinks steps to follow at each depth.
+Values can be from <code>1</code> to <code>200</code>. The default is <code>50</code>.</li>
+<li><code><em>same_domain</em></code>.  Optional. Whether to restrict hyperlinks followed to be from the same domain as the bookmarked url.
+Values can be either <code>1</code> for true or <code>0</code> for false. The default is <code>1</code>.</li>
+<li><code><em>same_stem</em></code>.  Optional. Whether to restrict hyperlinks followed to share the same url stem as the bookmarked url. (i.e. the left substring of the url up to the filename part must be the same). This constrains links to follow only "subpages" of the bookmarked page.
+Values can be either <code>1</code> for true or <code>0</code> for false. The default is <code>0</code>.</li>
+<li><code><em>threshold</em></code>.  Optional. A discrimination score below which any links will be discarded when descending to the next depth of crawl. The score is <code>1 - n<sub>term</sub>/N</code>, where <code>n<sub>term</sub></code> is the number of documents in which <code>term</code> occurs and <code>N</code> is the total number of documents. 
+This parameter allows hyperlinks that occur in most of the bookmarked url pages being imported to be ignored, thereby avoiding non-discrimitating text (e.g. from "Contact Us" pages, "About" pages, "Help" or home pages). This is an optimisation to avoid carrying this text through to the profiling stage where it would be largely ignored anyway by virtue of low <em>tf-idf</em> scores for its terms.
+<code>threshold</code> values can be decimal numbers between <code>0</code> and <code>1</code>. The default is <code>0.7</code>, which will discard hyperlinks occurring in over 70% of bookmarked url pages in a crawl.</li>
+<li><code><em>remove_html</em></code>.  Optional. Whether to remove HTML "tags" (or any xml elements) from the text.
+Values can be either <code>1</code> for true or <code>0</code> for false. The default is <code>0</code>.</li>
+</ul>
+
+<h3>Usage Examples:</h3>
+<blockquote>
+<h4>cURL (<a href="curl">about cURL</a>):</h4>
+<code>curl -X POST -H "Token:mytoken" [% site.url %]/kdd09/documents/pc/import/pc-senior</code><br/>
+</blockquote>
+
+<h3>Response (<a href="return-values">about return values</a>):</h3>
+<blockquote>
+<h4>XML example:</h4>
+<pre>[% FILTER html -%]
+<?xml version="1.0" encoding="UTF-8"?>
+<result>
+  <ok>true</ok>
+</result>
+[% END %]</pre>
+</blockquote>
+
+

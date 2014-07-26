@@ -1,0 +1,191 @@
+[% page.title = 'SubSift REST API: Examples - Prolog'
+   page.tab = 'api'
+%]
+
+<h2>Prolog and Terms</h2>
+<p>
+Prolog is the language of choice for a variety of machine learning and artificial intelligence research work, and Prolog terms are its native data format.
+SubSift's <code>terms</code> output <a href="[% site.url %]/api/formats">format</a> makes SubSift a useful tool for quickly creating data sets from textual information or as a processing component in a software pipeline.
+</p>
+<p>
+The examples on this page use SubSift's <code>terms</code> output <a href="[% site.url %]/api/formats">format</a>, i.e. Prolog terms, which are thus portable and may be consulted by any implementation of Prolog, asserting the <code>result</code> term functor as a fact in the Prolog database. However, there is no reason why any of the output formats that SubSift supports cannot also be used from Prolog, but all non-terms formats require parsing in Prolog itself, e.g. using a definite clause grammar, or using an implementation-specific library.
+</p>
+
+<h2>Making HTTP Requests from Prolog</h2>
+
+<p>
+To access the SubSift REST API directly from Prolog requires support for HTTP. The Prolog standard does not include an HTTP library although such libraries exist for most, if not all, modern Prolog implementations. The examples below all use <a href="http://www.swi-prolog.org/" class="external">SWI-Prolog</a>, which has excellent support for HTTP. If your Prolog implementation does not support HTTP then it is also possible to access the SubSift REST API indirectly by invoking an external application, such as <a href="[% site.url %]/api/curl">curl</a> and either capturing its output or storing its output to a temporary file to be consulted in the usual way by Prolog.
+</p>
+
+<h2>Calling SubSift REST API Methods from SWI-Prolog</h2>
+<p>
+The standard distribution of <a href="http://www.swi-prolog.org/" class="external">SWI-Prolog</a> includes several HTTP library modules. The simplest way of accessing SubSift's REST API methods is to use the <code>http_client</code> module. To use this module, include the following <code>use_module/1</code> line in your program to import the necessary predicates.
+</p>
+<blockquote>
+<pre>[% FILTER html -%]
+:- use_module(library('http/http_client')).
+[% END %]</pre>
+</blockquote>
+
+<p>
+For further details of this HTTP client library, see the SWI-Prolog online <a href="http://www.swi-prolog.org/pldoc/doc_for?object=section%283%2c%272.2%27%2cswi%28%27%2fdoc%2fpackages%2fhttp.html%27%29%29" class="external">documentation</a> or the locally installed copy that is part of the standard SWI-Prolog distribution. The SWI-Prolog manual has an easy to use search and you can <a href="http://www.swi-prolog.org/pldoc/search?for=http&in=all&match=summary" class="external">search for "http"</a> or similar topics such as REST, XML and JSON.
+To use the examples on this page though, the above <code>use_module/1</code> line is all that is required.
+</p>
+
+<h3>Example 1: GET /:user_id/bookmarks</h3>
+<p>
+This example gets a list of bookmark folders from the SubSift API using the <code>http_get(+URL, -Reply, +Options)</code> predicate. If successful, <code>Reply</code> is bound to an atom representation of a term representation of the result, otherwise an exception is thrown. By using <code>term_to_atom</code> with the first argument unbound, this atom can then be converted to a Prolog term.
+</p>
+<blockquote>
+<pre>[% FILTER html -%]
+:- use_module(library('http/http_client')).
+
+:- http_get('[% site.url %]/kdd09/bookmarks.terms?pretty=0', Reply, []),
+   term_to_atom(Term, Reply),
+   % now do something useful with Term
+   .
+   .
+   .
+[% END %]</pre>
+</blockquote>
+<p>
+The url above has two parameters which will normally be used in all SubSift API calls from Prolog where <code>terms</code> output format is required. The first is the suffix <code>.terms</code> (which may alternatively be left off and included as the parameter <code>format=terms</code>), which specifies that the response should be returned in Prolog terms format. The second is <code>pretty=0</code> which specifies that pretty printing (i.e. the insertion of white space to make the output more human readable when viewed in a text editor, debugger or from a command line) is not required. Omitting the <code>pretty=0</code> parameter has no effect on the term created by the above code but it does, ironically, make the Prolog atom harder to read when debugging in SWI-Prolog.
+</p>
+<p>
+  If executed from the SWI-Prolog command line, the above example will produce output something like this (white space added for clarity and long functor argument lists abbreviated with "..."):</p>
+<blockquote>
+<pre>[% FILTER html -%]
+?- http_get('[% site.url %]/kdd09/bookmarks.terms?pretty=0', Reply, []),
+   term_to_atom(Term,Reply).
+
+Reply = 'result(bookmarks([hash(created(1273842447), description(\'KDD 2009 Programme Committee\'), id(pc), ...), 
+hash(created(1273931062), description(\'KDD 2009 Senior Programme Committee\'), id(\'senior-pc\'), ...), 
+hash(created(1266787692), description(\'KDD 2009 Area Chairs\'), id(chairs), ...)])).',
+
+Term = result(bookmarks([hash(created(1273842447), description('KDD 2009 Programme Committee'), id(pc), ...), 
+hash(created(1273931062), description('KDD 2009 Senior Programme Committee'), id('senior-pc'), ...), 
+hash(created(1266787692), description('KDD 2009 Area Chairs'), id(chairs), ...)])).
+[% END %]</pre>
+</blockquote>
+
+<p>
+  It can be seen from the values of Reply and Term that the former is an atom and the latter a native Prolog term.   Unless there is an error (see <a href="[% site.url %]/api/response-codes-and-errors">Response Codes and Errors</a>), SubSift will always return a single term, <code>result</code>, containing the response data. In this example the response data is the <code>bookmarks</code> term containing a list of "hash" terms as its arguments. In SubSift the <code>hash</code> term is used as an anonymous functor to group attribute-value pairs (properties) associated with a single "object". In the example, each hash term represents a single bookmarks folder and it can be seen from the result that there are three bookmarks folders represented in this way.
+</p>
+
+<h3>Example 2: POST /:user_id/bookmarks/:item_id</h3>
+<p>
+This example creates a new bookmarks folder using the <code>http_post(+URL, +In, -Reply, +Options)</code> predicate. This requires SubSift to make a change to its data store and thus requires HTTP POST to be used instead of HTTP GET as used in the previous example.
+</p>	
+
+<blockquote>
+<pre>[% FILTER html -%]
+:- use_module(library('http/http_client')).
+
+:- http_post(
+       '[% site.url %]/kdd09/bookmarks/mynewfolder.terms',
+       form_data([pretty=0,description='My Folder']),
+       Reply,
+       []
+   ),
+   term_to_atom(Term,Reply),
+   % optionally, now do something useful with Term
+   .
+   .
+   .
+[% END %]</pre>
+</blockquote>
+
+<p>
+  Notice that for <code>http_post</code> the parameters to be passed to SubSift are included in a list inside the <code>form_data</code> term; this is different to <code>http_get</code> where they are added to the url after the question mark. Any parameters added to the url of an <code>http_post</code> will be ignored.
+</p>
+
+<p>
+  If executed from the SWI-Prolog command line, the above example will produce output something like this (white space added for clarity and long functor argument lists abbreviated with "..."):</p>
+
+<blockquote>
+<pre>[% FILTER html -%]
+?- http_post(
+       '[% site.url %]/kdd09/bookmarks/mynewfolder.terms',
+       form_data([pretty=0,description='My Folder']),
+       Reply,
+       []
+   ),
+   term_to_atom(Term,Reply).
+
+Reply = 'result(bookmarks(created(1269079662), description(\'My Folder\'), id(mynewfolder), ...)).',
+
+Term = result(bookmarks(created(1269079662), description('My Folder'), id(mynewfolder), ...)).
+[% END %]</pre>
+</blockquote>
+
+<p>This example creates a new bookmarks folder with an <code>id</code> of <code>mynewfolder</code> and <code>description</code> of <code>'My Folder'</code>.</p>
+
+
+<h3>Example 3: Checking the Response Status Code</h3>
+
+<p>Both http_get and http_post predicates accept a list of options. One of the options is the reply_header functor. You use it like this:</p>
+
+<blockquote>
+<pre>[% FILTER html -%]
+?- http_post(
+       '[% site.url %]/kdd09/bookmarks/mynewfolder.terms',
+       form_data([pretty=0]),
+       Reply, 
+       [reply_header(Header)]
+   ),
+   memberchk(status(Code,Message), Header).
+
+Reply = 'result(bookmarks(created(1269079930), description, id(mynewfolder), ...)).',
+
+Header = [input('$stream'(4611686018426119464)), http_version(1-1), status(201, 'Created'), 
+          date('Sat, 20 Mar 2010 10:12:09 GMT'), server('Apache'), 
+          cache_control('no-cache, no-store, must-revalidate, pre-check=0, post-check=0'), 
+          pragma('no-cache'), location('[% site.url %]/kdd09/bookmarks/mynewfolder'), 
+          keep_alive(...)|...],
+
+Code = 201,
+
+Message = 'Created'.
+[% END %]</pre>
+</blockquote>
+
+<p>
+It can be seen that the <code>Header</code> variable is unified with a list of attributes from the HTTP header. In that list is the HTTP status code: <code>status(201, 'Created')</code>. This example then uses <code>memberchk(status(Code,Message), Header)</code> to extract the <code>Code</code> number and <code>Message</code> atom text. Recall that <code>memberchk/2</code> is like <code>member/2</code> but it does not waste time backtracking, so is a good predicate to use when you know there is only one solution.
+</p>
+
+
+
+<h3>Example 4: Using HEAD, DELETE and PUT</h3>
+
+<p>The <code>GET</code> and <code>POST</code> HTTP methods are two of several HTTP methods required to make full use of the SubSift REST API. Although SWI-Prolog can be used to issue all the required methods directly, the easiest way to access the remaining methods is by using SubSift's <code>_method</code> parameter (see <a href="[% site.url %]/api/http-methods">HTTP Request Methods</a>) to emulate them using just the <code>http_get</code> and <code>http_post</code> predicates shown in the earlier examples.</p>
+
+<p>The following example checks that a bookmarks folder with an <code>id</code> of <code>mynewfolder</code> exists, emulating HTTP <code>HEAD</code> by using HTTP <code>GET</code> and the parameter <code>_method=head</code>. The status of 200 in the response header indicates that it does indeed exist.</p>
+
+<blockquote>
+<pre>[% FILTER html -%]
+?- http_get(
+      '[% site.url %]/kdd09/bookmarks/mynewfolder.terms?pretty=0&_method=head', 
+      _, 
+      [reply_header(Header)]
+   ).
+
+Header = [input('$stream'(4611686018426119464)), http_version(1-1), status(200, 'OK'), ...].
+[% END %]</pre>
+</blockquote>
+
+<p>The following example deletes a bookmarks folder with an <code>id</code> of <code>mynewfolder</code>, emulating HTTP <code>DELETE</code> by using HTTP <code>POST</code> and the parameter <code>_method=delete</code>. The term representation of the deleted bookmarks folder is returned.</p>
+
+<blockquote>
+<pre>[% FILTER html -%]
+?- http_post(
+       '[% site.url %]/kdd09/bookmarks/mynewfolder.terms',
+       form_data([pretty=0,_method=delete]),
+       Reply, 
+       []
+   ).
+
+Reply = 'result(bookmarks(created(1269079930), description, id(mynewfolder), ...)).'.
+[% END %]</pre>
+</blockquote>
+
+<p>A variation of the above <code>DELETE</code> example could be used to perform an HTTP <code>PUT</code>, by using <code>http_post</code> with the parameter <code>_method=put</code>.</p>

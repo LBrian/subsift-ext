@@ -1,0 +1,57 @@
+[% page.title = 'API Method: bookmarks folder destroy'
+   page.tab = 'api'
+%]
+
+<h2>DELETE /:user_id/bookmarks/:folder_id</h2>
+
+<p>
+Deletes the specified bookmarks folder. 
+Returns a representation of the deleted bookmarks folder with a 200 OK HTTP status code.
+</p>
+
+<h3>URL:</h3>
+<code>[% site.url %]/<em>user_id</em>/bookmarks/<em>folder_id</em>/items.<em>format</em></code>
+
+<h3>Formats (<a href="formats">about return formats</a>):</h3>
+<code>[% INCLUDE 'api/_formats.phtml' %]</code>
+
+<h3>HTTP Methods (<a href="http-methods">about HTTP methods</a>):</h3>
+<code>DELETE</code>
+<p>Clients that can not issue <code>DELETE</code> requests can use <code>POST</code> with the added parameter <code>_method=DELETE</code></p>
+
+<h3>Requires Authentication (<a href="authentication">about authentication</a>):</h3>
+<code>true</code>
+
+<h3>Parameters:</h3>
+<ul>
+<li><code>folder_id</code>.  Required. The ID of the bookmarks folder to be destroyed.
+<ul>
+<li>Example: <code>[% site.url %]/kdd09/bookmarks/pc.xml</code></li>
+</ul>
+</li>
+</ul>
+
+<h3>Usage Examples:</h3>
+<blockquote>
+<h4>cURL (<a href="curl">about cURL</a>):</h4>
+<code>curl -X DELETE -H "Token:mytoken" [% site.url %]/kdd09/bookmarks/chairs</code><br/>
+</blockquote>
+
+<h3>Response (<a href="return-values">about return values</a>):</h3>
+<blockquote>
+<h4>XML example:</h4>
+<pre>[% FILTER html -%]
+<?xml version="1.0" encoding="UTF-8"?>
+<result>
+  <folder>
+    <id>chairs</id>
+    <created>1265023200</created>
+    <description>KDD 2009 Area Chairs</description>
+    <mode>public</mode>
+    <modified>1267404220</modified>
+  </folder>
+</result>
+[% END %]</pre>
+</blockquote>
+
+

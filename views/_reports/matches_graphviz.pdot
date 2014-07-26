@@ -1,0 +1,42 @@
+graph matches__[% matches.profiles_id1 %]__[% matches.profiles_id2 %] {
+	node  [
+	        fontname="Arial", 
+	        fontsize = 8,
+	        penwidth=1,
+	        fontcolor="blue",
+	        color="blue",
+	        style="filled",
+	        bgcolor="white",
+	        fillcolor="white",
+	        shape="ellipse"
+	      ];
+	edge  [ penwidth=0.25,
+	        fillcolor="grey",
+	        fontname="Arial", 
+	        fontsize=8
+	      ];
+	graph [ fontname="Arial",
+	        fontsize=10,
+          tooltip=" ",
+          outputorder="edgesfirst",
+          bgcolor="invis",
+          size="8,6"
+        ];
+[% FOREACH match IN match_items -%]
+  [%- IF match.profiles_id == matches.profiles_id1 -%]
+"[% match.description %]" [[% IF interactive %]tooltip="[% match.terms %]" ,[% END %]URL="[% match.source %]", target="_new"];
+[% FOREACH item IN match.item -%]
+[%- IF item.id != match.id -%]
+"[% match.description %]" -- "[% item.description %]" [weight=[% item.inverse_rank * item.inverse_rank %][% IF interactive %], label="✪", labeltooltip="[% item.terms %]"[% END %], penwidth=[% 0.20 + 2 * (item.inverse_rank * item.inverse_rank  / (match_items.size * match_items.size) ) %]];
+[% END -%]
+[%- END -%]
+  [%- END -%]
+[% END -%]
+[% IF matches.profiles_id1 != matches.profiles_id2 %]
+  [%- FOREACH match IN match_items -%]
+    [%- IF match.profiles_id == matches.profiles_id2 -%]
+"[% match.description %]" [[% IF interactive %]tooltip="[% match.terms %]" ,[% END %]URL="[% match.source %]", color="red", fontcolor="red", target="_new"];
+[% END -%]
+[%- END -%]
+[%- END -%]
+}

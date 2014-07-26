@@ -1,0 +1,124 @@
+[% page.title = 'API Method: matches update' 
+   page.tab = 'api'
+%]
+
+<h2>PUT /:user_id/matches/:folder_id</h2>
+
+<p>
+Updates a matches folder in the specified user account.
+Returns a representation of the updated matches folder with a 200 OK HTTP status code.
+</p>
+
+<h3>URL:</h3>
+<code>[% site.url %]/<em>user_id</em>/matches/<em>folder_id</em>/profiles/<em>profiles_id1</em>/with/<em>profiles_id2</em>.<em>format</em></code><br/>
+or<br/>
+<code>[% site.url %]/<em>user_id</em>/matches/<em>folder_id</em>.<em>format</em></code>
+
+<h3>Formats (<a href="formats">about return formats</a>):</h3>
+<code>[% INCLUDE 'api/_formats.phtml' %]</code>
+
+<h3>HTTP Methods (<a href="http-methods">about HTTP methods</a>):</h3>
+<code>PUT</code>
+<p>Clients that can not issue <code>PUT</code> requests can use <code>POST</code> with the added parameter <code>_method=PUT</code></p>
+
+<h3>Requires Authentication (<a href="authentication">about authentication</a>):</h3>
+<code>true</code>
+
+<h3>Parameters:</h3>
+<ul>
+
+<li><code>folder_id</code>.  Required. The ID of the matches folder to update.</li>
+<li><code><em>profiles_id1</em></code>.  Optional. The ID of the first profiles folder to compare.</li>
+<li><code><em>profiles_id2</em></code>.  Optional. The ID of the second profiles folder to compare.</li>
+
+<li><code><em>description</em></code>.  Optional.  The description of the folder to update.</li>
+<li><code><em>mode</em></code>.  Optional. Whether the matches folder is publicly accessible or whether authentication is required to access. 
+Values can be <code>public</code> or <code>private</code>. Folders are public by default if no mode is specified.</li>
+
+<li><code><em>limit</em></code>.  Optional. The maximum number of terms retained and stored after the analysis.
+The calculations are performed using all the terms but only the <code>limit</code> highest <em>tf-idf</em> scoring terms are retained.
+Values can be between <code>1</code> and <code>100000</code>. The default is <code>1000</code>.</li>
+<li><code><em>threshold</em></code>.  Optional. A <em>tf-idf</em> score below which any terms will be discarded. 
+Values can be decimal numbers between <code>0</code> and <code>1</code>. The default is <code>0</code> (i.e. no terms are discarded).</li>
+
+<li><code>sort</code>.  Optional. Number of the term data column to sort the returned <code>term</code> statistics on.
+Numeric data columns are sorted in descending order. Textual data columns are sorted in ascending alphabetical order.
+Values of <code>sort</code> must be one of:
+<ul>
+<li><code>0</code> for <code>name</code>, the term name (i.e. the text of the word or keyword)</li>
+<li><code>1</code> for <code>n</code>, the term occurrences (i.e. the total number of times a term occurs across all items in the document)</li>
+<li><code>2</code> for <code>dt</code>, the document term count (i.e. the total number items in the document in which the term occurs)</li>
+</ul>
+The default when no value is supplied is <code>2</code>.
+</li>
+<li><code><em>full</em></code>.  Optional. Whether to include the <code>term</code> data in the returned representation of the folder of the profiles folder.
+Values can be either <code>1</code> for true or <code>0</code> for false. The default is <code>0</code>.
+<ul>
+<li>Example: <code>[% site.url %]/kdd09/matches/pc_papers.xml</code></li>
+</ul>
+</li>
+
+</ul>
+
+[%#
+<h3>Usage notes:</h3>
+<p>This method is subject to update limits. An HTTP 403 will be returned if this limit as been hit.</p>
+%]
+
+<h3>Usage Examples:</h3>
+<blockquote>
+<h4>cURL (<a href="curl">about cURL</a>):</h4>
+<code>curl -X PUT -H "Token:mytoken" -d "description=KDD 2009 PC x Papers" -d "full=1"<span class="cr"></span><br/>
+[% site.url %]/kdd09/matches/pc_papers.xml</code><br/>
+</blockquote>
+
+<h3>Response (<a href="return-values">about return values</a>):</h3>
+<blockquote>
+<h4>XML example:</h4>
+<pre>[% FILTER html -%]
+<?xml version="1.0" encoding="UTF-8"?>
+<result>
+  <folder>
+    <id>pc_papers</id>
+    <created>1267965675</created>
+    <description>KDD 2009 PC x Papers</description>
+    <limit>1000</limit>
+    <mode>public</mode>
+    <modified>1268577354</modified>
+    <profiles_id1>pc</profiles_id1>
+    <profiles_id2>papers</profiles_id2>
+    <term>
+      <name>data</name>
+      <dt>699</dt>
+      <n>5465</n>
+    </term>
+    <term>
+      <name>based</name>
+      <dt>534</dt>
+      <n>2251</n>
+    </term>
+    <term>
+      <name>paper</name>
+      <dt>479</dt>
+      <n>544</n>
+    </term>
+    .
+    .
+    .
+    <term>
+      <name>schism</name>
+      <dt>1</dt>
+      <n>2</n>
+    </term>
+    <term>
+      <name>bandit</name>
+      <dt>1</dt>
+      <n>1</n>
+    </term>
+    <threshold>0</threshold>
+  </folder>
+</result>
+[% END %]</pre>
+</blockquote>
+
+

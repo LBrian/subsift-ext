@@ -1,0 +1,166 @@
+[% page.title = 'SubSift REST API: Example Workflow' 
+   page.tab = 'api'
+%]
+
+<p>
+SubSift's <a href="[% site.url %]/blog/a-sample-subsift-workflow">demonstrator</a> user interface is implemented as a wizard-like series of web forms, taking the user through the above process form by form. At the end of the sequence SubSift produced downloadable web pages with ranked lists of papers per reviewer, and ranked lists of reviewers per paper. However, at the more abstract level, this workflow for comparing Programme Committee (PC) members (i.e. reviewers) and submitted abstracts consists of the following three parts.
+</p>
+
+<ol>
+<li>A. Profile the PC Members</li>
+<li>B. Profile the Abstracts</li>
+<li>C. Match PC Member Profiles against Abstract Profiles</li>
+</ol>
+
+<p>Behind the functionality of each of these parts is a series of SubSift REST API invocations, which together constitute the workflow illustrated in the following diagram.</p>
+
+<div>
+<img src="[% site.media %]/img/demo/workflow.png" width="368" height="398" alt="Submission Sifting workflow" />
+</div>
+
+<p>The SubSift REST API calls that make up this workflow are described below. For readability, the HTTP request methods and their parameters are denoted using the format below.</p>
+
+<blockquote>
+<pre>[% FILTER html -%]
+<http_method> [<uri>][<user_id>]<path>
+<parameter_name_1> = <parameter_value_1>
+<parameter_name_2> = <parameter_value_2>
+...
+<parameter_name_N> = <parameter_value_N>
+[% END %]</pre>
+</blockquote>
+
+<p>For brevity we omit <code>&lt;uri&gt;</code>, which has the value <code>https://subsift.ilrt.bris.ac.uk</code> for the publicly hosted version of SubSift, and <code>&lt;user_id&gt;</code> which will always be the account name (e.g. <code>kdd09</code> for the SIGKDD'09 conference).</p>
+
+<p>Note also that we omit details of the security token needed in the HTTP request header of all DELETE, POST and PUT requests. The token is also required to access folders and data marked as private, irrespective of request method.</p>
+
+
+<h2>A. Profile the PC Members</h2>
+
+<p><strong>Step 1.</strong> Obtain a list of PC member names and their DBLP author page URIs. SubSift's DBLP Author Finder demo accepts a list of author names and then looks up these names on the <a href="http://dblp.uni-trier.de/" class="external">DBLP Computer Science Bibliography</a> and suggests author pages which, after disambiguation, are returned as a list with each line as: <code>&lt;pc member name&gt;, &lt;uri&gt;</code>.
+
+<p><strong>Step 2.</strong> Create bookmarks folder to hold the list of PC member URIs found in step 1.</p>
+
+<blockquote>
+<pre>[% FILTER html -%]
+POST /bookmarks/pc
+[% END %]</pre>
+</blockquote>
+
+<p><strong>Step 3.</strong> Create bookmarks in this folder - one per PC member URI.</p>
+
+<blockquote>
+<pre>[% FILTER html -%]
+POST /bookmarks/pc/items
+items_list=<list of URIs from step 1>
+[% END %]</pre>
+</blockquote>
+
+<p><strong>Step 4.</strong> Create a documents folder to hold the web page content (text) of the DBLP author pages.</p>
+
+<blockquote>
+<pre>[% FILTER html -%]
+POST /documents/pc
+[% END %]</pre>
+</blockquote>
+
+<p><strong>Step 5.</strong> Import the bookmarks folder into the documents folder. This adds the URIs to SubSift Harvester Robot's crawl queue. In time, all the URIs will be fetched and a document created in the documents folder for each webpage fetched.</p>
+
+<blockquote>
+<pre>[% FILTER html -%]
+POST /documents/pc/import/pc
+[% END %]</pre>
+</blockquote>
+
+<p>We name the documents folder the same as the bookmarks folder. This is a convention, not a requirement, but makes the ancestry of the folder obvious.</p>
+
+<p><strong>Step 6.</strong> Create a profiles folder from the bookmarks folder.</p>
+
+<blockquote>
+<pre>[% FILTER html -%]
+POST /profiles/pc/from/pc
+[% END %]</pre>
+</blockquote>
+
+
+
+<h2>B. Profile the Abstracts</h2>
+
+<p><strong>Step 7.</strong> For bulk upload, pre-process the abstracts into CSV format so that each line is: <code>&lt;paper id&gt;, &lt;abstract&gt;</code>. Include the text of the paper title in with the abstract text.</p>
+
+<p><strong>Step 8.</strong> Create a documents folder to hold the abstracts.</p>
+
+<blockquote>
+<pre>[% FILTER html -%]
+POST /documents/abstracts
+[% END %]</pre>
+</blockquote>
+
+<p><strong>Step 9.</strong> Use the abstracts CSV text to create a document item for each abstract.</p>
+
+<blockquote>
+<pre>[% FILTER html -%]
+POST /documents/abstracts/items
+items_list=<csv from Step 7>
+[% END %]</pre>
+</blockquote>
+
+<p><strong>Step 10.</strong> Create a profiles folder from the documents folder.</p>
+
+<blockquote>
+<pre>[% FILTER html -%]
+POST /profiles/abstracts/from/abstracts
+[% END %]</pre>
+</blockquote>
+
+
+
+<h2>C. Match PC Member Profiles against Abstract Profiles</h2>
+
+<p><strong>Step 11.</strong> Match the PC members profiles folder against the abstracts profiles folder.</p>
+
+<blockquote>
+<pre>[% FILTER html -%]
+POST /matches/pc_abstracts/profiles/pc/with/abstracts
+[% END %]</pre>
+</blockquote>
+
+<p><strong>Step 12.</strong> Fetch the ranked list of papers per PC member. Optionally, specify an XSLT stylesheet to transform the XML into a custom web page for each PC member.</p>
+
+<blockquote>
+<pre>[% FILTER html -%]
+GET /matches/pc_abstracts/items
+profiles_id=pc
+full=1
+[% END %]</pre>
+</blockquote>
+
+<p>Note that you can get the data in smaller chunks by using other API calls.</p>
+
+<p><strong>Step 13.</strong> Fetch the ranked list of reviewers per paper.
+
+<blockquote>
+<pre>[% FILTER html -%]
+GET /matches/pc_abstracts/items
+profiles_id=abstracts
+full=1
+[% END %]</pre>
+</blockquote>
+
+<p><strong>Step 14.</strong> If required, fetch the similarity matrix to use for bidding, optionally specifying manually chosen thresholds to discretize the scores into the range 3..1 as bid values.</p>
+
+<blockquote>
+<pre>[% FILTER html -%]
+GET /matches/pc_abstracts/matrix
+[% END %]</pre>
+</blockquote>
+
+<p>Or omit the <code>profiles_id</code> parameter of the items call to get XML instead of a matrix:</p>
+
+<blockquote>
+<pre>[% FILTER html -%]
+GET /matches/pc_abstracts/items
+full=1
+[% END %]</pre>
+</blockquote>
+

@@ -1,0 +1,48 @@
+[% page.title = 'API Method: workflow enacting'
+   page.tab = 'api'
+%]
+
+<h2>HEAD /:user_id/workflow/:workflow_id</h2>
+
+<p>
+Tests whether the specified workflow is still being enacted (executed). This method can be polled to detect when the SubSift's workflow enacter has finished running the workflow. Do not poll more frequently than every minute.
+Returns a 200 OK HTTP status code if there are commands in the workflow still to be enacted. Otherwise returns 404 Not Found.
+</p>
+
+<h3>URL:</h3>
+<code>[% site.url %]/<em>user_id</em>/workflow/<em>workflow_id</em>.<em>format</em></code>
+
+<h3>Formats (<a href="formats">about return formats</a>):</h3>
+<p>Irrelevant because no response body is returned.</p>
+
+<h3>HTTP Methods (<a href="http-methods">about HTTP methods</a>):</h3>
+<code>HEAD</code> 
+
+<p>Clients that can not issue <code>HEAD</code> requests can use <code>GET</code> with the added parameter <code>_method=HEAD</code></p>
+
+<h3>Requires Authentication (<a href="authentication">about authentication</a>):</h3>
+<code>true</code>
+
+<h3>Parameters:</h3>
+<ul>
+<li><code>workflow_id</code>.  Required. The ID of the workflow to destroy.</li>
+<ul>
+<li>Example: <code>[% site.url %]/kdd09/workflow/myflow1</code>
+</ul>
+</li>
+</ul>
+
+<h3>Usage Examples:</h3>
+<blockquote>
+<h4>cURL (<a href="curl">about cURL</a>):</h4>
+<code>curl -X HEAD -H "Token:mytoken" [% site.url %]/kdd09/workflow/myflow1.xml</code><br/>
+</blockquote>
+
+<h3>Response (<a href="return-values">about return values</a>):</h3>
+
+<p>
+A response header is returned with the result in the HTTP status.
+No response body is returned.
+</p>
+
+

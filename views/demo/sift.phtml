@@ -1,0 +1,465 @@
+[% page.title = 'Submission Sifting' 
+   page.tab = 'demo'
+%]
+
+[% page.head = BLOCK %]
+<link rel="stylesheet" type="text/css" media="screen" href="[% site.media %]/style/demo.css" />
+
+<link rel="stylesheet" type="text/css" href="[% site.media %]/css/custom-theme/jquery-ui-1.8.4.custom.css" /> 
+<script type="text/javascript" src="[% site.media %]/js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="[% site.media %]/js/jquery-ui-1.8.4.custom.min.js"></script>
+
+<script type="text/javascript" src="[% site.media %]/js/uploader/fileuploader.js"></script>
+<link rel="stylesheet" type="text/css" href="[% site.media %]/js/uploader/fileuploader.css" /> 
+
+<script>
+var site = {
+    'url': '[% site.url %]',
+    'media': '[% site.media %]'
+};
+</script>
+<script type="text/javascript" src="[% site.media %]/js/sift.js"></script>
+
+[% END %]
+
+<p>
+  This demo consists of a single web page divided into three sections, listed as A, B and C below. 
+  Use A and B to build profiles of reviewers and papers respectively. 
+  Then use C to compare pairs of these profiles and generate personalised web pages
+  listing initial bid assignments for each of the reviewers.
+</p>
+
+<ol>
+  <li><a href="#A" title="Section A">A. Reviewer Profile Builder</a></li>
+  <li><a href="#B" title="Section B">B. Paper Profile Builder</a></li>
+  <li><a href="#C" title="Section C">C. Profile Matcher</a></li>
+</ol>
+
+<p>
+  Some of the forms on this page require you to have a SubSift REST API user ID and token (see <a href="[% site.url %]/api/authentication">About Authentication</a>).
+  Please enter those details below and the forms will automatically detect and use them without you needing to retype them for each form.
+</p>
+
+<form>
+  <table style="border: none;">
+    <tr>
+      <td><label for="user_id" class="demoform">User ID:</label></td>
+      <td><label for="token" class="demoform">Token:</label></td>
+    </tr>
+    <tr>
+      <td><input type="text" id="user_id" class="demoform" value=""/></td>
+      <td><input type="password" id="token" class="demoform" style="width: 350px;" value=""/></td>
+    </tr>
+  </table>
+</form>
+
+
+<a name="A"></a>
+<h2>A. Reviewer Profile Builder</h2>
+
+<p>
+  This six-step process allows you to build collections of reviewer profiles based on their DBLP author bibliography pages.
+  Start at Step 1 below and work your way through, clicking Submit at each step to progress to the next.
+  All you will need to get started is a list of your PC member names.
+</p>
+
+<div id="tabsA">
+<ul class="tabs">
+  <li><a href="#tabA1" title="1. Enter Names">Step 1</a></li>
+  <li><a href="#tabA2" title="2. Find Pages">Step 2</a></li>
+  <li><a href="#tabA3" title="3. Disambiguate">Step 3</a></li>
+  <li><a href="#tabA4" title="4. Fetch Pages">Step 4</a></li>
+  <li><a href="#tabA5" title="5. Build Profiles">Step 5</a></li>
+  <li><a href="#tabA6" title="6. View Profiles">Step 6</a></li>
+</ul>
+
+<div id="tabA1">
+  <!--  A.1 Enter Names -->
+  <h3>1. Enter Names</h3>
+  
+  <p>
+    Enter a list of reviewer names, one per line. 
+    Then click Submit to search for each name on 
+    <a href="http://www.informatik.uni-trier.de/~ley/db/" target="dblp">DBLP</a> 
+    and compile possible author page URLs for each name.
+  </p>
+
+  <form id="formA1">
+
+    <label for="names_list" class="demoform">Author Names:</label><br/>
+    <textarea id="names_list" name="names_list" style="width: 450px;height: 100px;" wrap="off"></textarea><br/>
+    <div style="padding-top:10px;padding-bottom:20px;">
+      <input type="checkbox" id="refresh"/>
+      <label for="refresh">Refresh cached copies of DBLP author pages.</label>
+    </div>
+  
+    <input type="submit" id="submitA1" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" value="Submit"/>
+
+  </form>
+
+  <p class="note alt">
+    IMPORTANT: This can take 5-10 seconds per name unless the author's page has already been cached by SubSift. 
+    A new page is not displayed until the search has finished. 
+    <strong>Do not click Submit again</strong> or it will take even longer!
+  </p>
+
+  <div id="resultA1">
+  </div>
+
+
+</div>
+<div id="tabA2">
+  <!--  A.2 Find Pages -->
+  <h3>2. Find Pages</h3>
+
+  <p>
+    Enter (or edit) a list of names and matching DBLP author names and DBLP author URLs.
+    When you are ready, click the Submit button to proceed to the next step,
+    disambiguating names for which there were multiple matches.
+  </p>
+
+  <div id="A2_feedback_from_A1">
+  </div>
+
+  <form id="formA2">
+
+    <label for="pages_list" class="demoform">Matched Names, Reviewer Names and URLs:</label><br/>
+    <textarea id="pages_list" name="pages_list" style="width: 830px;height: 100px;" wrap="off"></textarea><br/>
+    <br/>
+        
+    <input type="submit" id="submitA2" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" value="Submit" />
+
+  </form>
+
+  <div id="resultA2">
+  </div>
+
+</div>
+<div id="tabA3">
+  <!--  A.3 Disambiguate -->
+  <h3>3. Disambiguate</h3>
+
+  <form id="formA3">  
+    <div id="disambiguation">
+      <em>Disambiguation form will appear here.</em>
+    </div>
+    <input type="submit" id="submitA3" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" value="Submit" style="margin-top: 30px;margin-bottom:50px;" />
+  </form>
+
+  <div id="resultA3">
+  </div>
+
+
+</div>
+<div id="tabA4">
+  <!--  A.4 Confirm Pages -->
+  <h3>4. Fetch Pages</h3>
+  
+  <p>
+  The following is a list of authors and a single uri for each.
+  The single uri retrieves all the author's publication titles from the one or more DBLP author pages (as selected on the previous page)
+  and concatenates them into a single plain-text web page.
+  This aggregated author page in some sense represents the research interests and expertise of the author.
+  </p>
+
+  <form id="formA4">
+    <div class="formbody">
+      <label for="bookmarks_list" >Reviewer Name, Reviewer URL:</label><br/>
+      <textarea id="bookmarks_list" name="bookmarks_list" style="width: 830px;height: 100px;" wrap="off">
+      </textarea><br/>
+      <br/>
+      <label for="reviewers_folder" >Enter a name to save this list as:</label><br/>
+      <input type="text" id="reviewers_folder" class="demoform" value="pc"/> &nbsp;<em>(Use only letters, numbers and underscores; no spaces allowed.)</em><br/>
+      <br/>
+      <input type="submit" name="submitA4" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" value="Submit" />
+    </div>
+  </form>
+
+  <div id="resultA4">
+  </div>
+
+
+</div>
+<div id="tabA5">
+  <!--  A.5 Build Profile -->
+  <h3>5. Build Profiles</h3>
+
+  <p>
+    Select the name of a list of pages and click Submit to build a profile of those pages.
+    If the name of the list you created in Step 4 is not yet in the selection list, wait a while and then click Refresh.
+    By default, the profile data is private to your own SubSift account but
+    you can choose to publish the data for public access via SubSift's REST API and Linked Data.
+    A URI for the linked data is displayed below after the profile has been created.
+    Clicking Submit again with different options will allow you to change the public/private status of the profile at any time.
+  </p>
+
+  <form id="formA5">
+    <div class="formbody">
+      <label for="reviewer_documents" >Reviewer Pages:</label><br/>
+      <select name="reviewer_documents" id="reviewer_documents">
+      </select>
+      <button type="button" id="formA5_update_options" class="ui-button ui-widget ui-corner-all ui-button-text-only ui-state-active"><span class="ui-button-text">Refresh</span></button>
+      <div style="padding-top:10px;padding-bottom:20px;">
+        <input type="checkbox" id="public_reviewer_profiles"/>
+        <label for="public_reviewer_profiles">Publish reviewer profiles for public access via SubSift's REST API and Linked Data.</label>
+      </div>
+      <input type="submit" name="submitA5" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" value="Submit" />
+    </div>
+  </form>
+
+  <div id="resultA5">
+  </div>
+
+
+</div>
+<div id="tabA6">
+  <!--  A.6 View Profile -->
+  <h3>6. View Profiles (optional)</h3>
+  
+  <p>
+    Select a profile and click Submit to generate a report.
+    If the profile you created in Step 5 is not yet in the selection list, wait a while and then click Refresh.
+    By default, the report is private to your own SubSift account; 
+    you can also choose to publish the report on the web for public access (although it is up to you to publicise the URL, or not, as you see fit).
+    The URL for the report is displayed below after the webpages have been created.
+    Clicking Submit again with different options will allow you to change the public/private status of the report at any time.
+  </p>
+
+  <form id="formA6">
+    <div class="formbody">
+      <label for="reviewer_profiles" >Reviewer Profiles:</label><br/>
+      <select name="reviewer_profiles" id="reviewer_profiles">
+      </select>
+      <button type="button" id="formA6_update_options" class="ui-button ui-widget ui-corner-all ui-button-text-only ui-state-active"><span class="ui-button-text">Refresh</span></button>
+      <div style="padding-top:10px;padding-bottom:20px;">
+        <input type="checkbox" id="public_reviewer_reports"/>
+        <label for="public_reviewer_reports">Publish reviewer profiles on the web.</label>
+      </div>
+      <input type="submit" name="submitA6" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" value="Submit" />
+    </div>
+  </form>
+
+  <div id="A6_feedback_from_A5">
+  </div>
+
+  <div id="resultA6">
+  </div>
+
+</div>
+</div><!--tabsA-->
+
+
+<a name="B"></a>
+<h2>B. Paper Profile Builder</h2>
+
+<p>
+  This three-step process allows you to build collections of paper profiles based on the titles and abstracts of submitted papers.
+  The format of the required CSV file containing the paper details is described in Step 1 below. 
+  You will need to construct this file yourself or export it from your conference management system.
+</p>
+
+<div id="tabsB">
+<ul class="tabs">
+  <li><a href="#tabB1" title="1. Upload Abstracts">Step 1</a></li>
+  <li><a href="#tabB2" title="2. Build Profiles">Step 2</a></li>
+  <li><a href="#tabB3" title="3. View Profiles">Step 3</a></li>
+</ul>
+
+
+<div id="tabB1">
+  <!--  B.1 Upload Abstracts -->
+  <h3>1. Upload Abstracts</h3>
+
+  <p>
+    Paper details must be uploaded into SubSift as a single CVS file with the format:
+  </p>
+  <pre>
+    &lt;paper1-identifier&gt;, &lt;paper1-title&gt;, &lt;paper1-abstract&gt;
+    &lt;paper2-identifier&gt;, &lt;paper2-title&gt;, &lt;paper2-abstract&gt;
+    ...
+    &lt;paperN-identifier&gt;, &lt;paperN-title&gt;, &lt;paperN-abstract&gt;    </pre>
+  <p>
+    Each row describes one paper. The identifier can be any string 
+    but typically will be a unique number or code generated by your conference management system.
+    The file does not have a header row. It uses a comma as delimiter and expects 
+    double-quotes for quoting where the text contains commas or line breaks.
+    Ideally, the encoding should be UTF-8 although this is not mandatory.
+  </p>
+  <form  id="formB1" method="post">
+    <div class="formbody" id="abstract_name_subform1">
+  	  <p>Before uploading your CSV file, you need to enter a name to save the abstracts as.</p>
+      <label for="abstracts_folder" >Name to save as:</label><br/>
+      <input type="text" id="abstracts_folder" class="demoform" value="abstracts"/> &nbsp;<em>(Use only letters, numbers and underscores; no spaces allowed.)</em><br/>
+      <br/>
+      <input type="submit" id="submitB1" name="submitB1" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" value="Submit" />        
+    </div>
+    <div class="formbody" id="abstract_name_subform2" style="display: none;">
+      <p>Save abstracts using the name: <strong><span id="formB1_abstract_name"></span></strong>
+      <button type="button" id="formB1_change_name" class="ui-button ui-widget ui-corner-all ui-button-text-only ui-state-active" style="margin-left: 20px;"><span class="ui-button-text">Change</span></button></p>
+      <p>Now, choose a CSV file to start the upload and proceed to the next step.</p>
+    </div>
+    <div id="file_uploader"></div>
+  </form>
+    
+  <div id="resultB1">
+  </div>
+
+</div>
+<div id="tabB2">
+  <!--  B.2 Build Profiles -->
+  <h3>2. Build Profiles</h3>
+
+  <p>
+    Select the name of a list of abstracts and click Submit to build a profile of those abstracts.
+    If the name of the list you created in Step 1 is not yet in the selection list, wait a while and then click Refresh.
+    By default, the profile data is private to your own SubSift account but
+    you can choose to publish the data for public access via SubSift's REST API and Linked Data.
+    A URI for the linked data is displayed below after the profile has been created.
+    Clicking Submit again with different options will allow you to change the public/private status of the profile at any time.
+  </p>
+
+  <form id="formB2">
+    <div class="formbody">
+      <label for="abstract_documents" >Paper Abstracts:</label><br/>
+      <select name="abstract_documents" id="abstract_documents">
+      </select>
+      <button type="button" id="formB2_update_options" class="ui-button ui-widget ui-corner-all ui-button-text-only ui-state-active"><span class="ui-button-text">Refresh</span></button>
+      <div style="padding-top:10px;padding-bottom:20px;">
+        <input type="checkbox" id="public_abstract_profiles"/>
+        <label for="public_abstract_profiles">Publish abstract profiles for public access via SubSift's REST API and Linked Data.</label>
+      </div>
+      <input type="submit" name="submitB2" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" value="Submit" />
+    </div>
+  </form>
+
+  <div id="resultB2">
+  </div>
+
+</div>
+<div id="tabB3">
+  <!--  B.3 View Profiles -->
+  <h3>3. View Profiles (optional)</h3>
+
+  <p>
+    Select a profile and click Submit to generate a report.
+    If the profile you created in Step 2 is not yet in the selection list, wait a while and then click Refresh.
+    By default, the report is private to your own SubSift account; 
+    you can also choose to publish the report on the web for public access (although it is up to you to publicise the URL, or not, as you see fit).
+    The URL for the report is displayed below after the webpages have been created.
+    Clicking Submit again with different options will allow you to change the public/private status of the report at any time.
+  </p>
+
+  <form id="formB3">
+    <div class="formbody">
+      <label for="abstract_profiles" >Paper Profiles:</label><br/>
+      <select name="abstract_profiles" id="abstract_profiles">
+      </select>
+      <button type="button" id="formB3_update_options" class="ui-button ui-widget ui-corner-all ui-button-text-only ui-state-active"><span class="ui-button-text">Refresh</span></button>
+      <div style="padding-top:10px;padding-bottom:20px;">
+        <input type="checkbox" id="public_abstract_reports"/>
+        <label for="public_abstract_reports">Publish paper profiles on the web.</label>
+      </div>
+      <input type="submit" name="submitB3" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" value="Submit" />
+    </div>
+  </form>
+
+  <div id="B3_feedback_from_B2">
+  </div>
+
+  <div id="resultB3">
+  </div>
+
+</div>
+</div><!--tabsB-->
+
+
+<a name="C"></a>
+<h2>C. Profile Matcher</h2>
+
+<p>
+  This two-step process allows you to compare two sets of profiles, usually of the conference PC and of the submitted papers,
+  and produce a report as a website which can be made public and optionally downloaded for use elsewhere.
+</p>
+
+<div id="tabsC">
+<ul class="tabs">
+  <li><a href="#tabC1" title="1. Compare Profiles">Step 1</a></li>
+  <li><a href="#tabC2" title="2. View Matches">Step 2</a></li>
+</ul>
+
+<div id="tabC1">
+  <!--  C.1 Compare Profiles -->
+  <h3>1. Compare Profiles</h3>
+
+  <p>
+    Select the name of a list of abstracts and click Submit to build a profile of those abstracts.
+    If the name of the list you created in Step 1 is not yet in the selection list, wait a while and then click Refresh.
+    By default, the profile data is private to your own SubSift account but
+    you can choose to publish the data for public access via SubSift's REST API and Linked Data.
+    A URI for the linked data is displayed below after the profile has been created.
+    Clicking Submit again with different options will allow you to change the public/private status of the profile at any time.
+  </p>
+
+  <form id="formC1">
+    <div class="formbody">
+      <div>
+        <label for="match_reviewer_profiles" >Reviewer Profiles:</label><br/>
+        <select name="match_reviewer_profiles" id="match_reviewer_profiles">
+        </select>
+        <button type="button" id="formC1_update_options1" class="ui-button ui-widget ui-corner-all ui-button-text-only ui-state-active"><span class="ui-button-text">Refresh</span></button>
+      </div>
+      <div style="padding-top:8px;">
+        <label for="match_abstract_profiles" >Paper Profiles:</label><br/>
+        <select name="match_abstract_profiles" id="match_abstract_profiles">
+        </select>
+        <button type="button" id="formC1_update_options2" class="ui-button ui-widget ui-corner-all ui-button-text-only ui-state-active"><span class="ui-button-text">Refresh</span></button>
+      </div>
+      <br/>
+      <label for="matches_folder" >Enter a name to save the matches as:</label><br/>
+      <input type="text" id="matches_folder" class="demoform" value="pc_abstracts"/> &nbsp;<em>(Use only letters, numbers and underscores; no spaces allowed.)</em><br/>
+      <div style="padding-top:12px;padding-bottom:20px;">
+        <input type="checkbox" id="public_matches"/>
+        <label for="public_matches">Publish matches for public access via SubSift's REST API and Linked Data.</label>
+      </div>
+      <input type="submit" name="submitC1" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" value="Submit" />
+    </div>
+  </form>
+
+  <div id="resultC1">
+  </div>
+
+
+</div>
+<div id="tabC2">
+  <!--  C.2 View Matches -->
+  <h3>2. View Matches</h3>
+
+  <p>
+    Select the name of the matches and click Submit to generate a report.
+    If the matches you created in Step 1 is not yet in the selection list, wait a while and then click Refresh.
+    By default, the report is private to your own SubSift account; 
+    you can also choose to publish the report on the web for public access (although it is up to you to publicise the URL, or not, as you see fit).
+    The URL for the report is displayed below after the webpages have been created.
+    Clicking Submit again with different options will allow you to change the public/private status of the report at any time.
+  </p>
+
+  <form id="formC2">
+    <div class="formbody">
+      <label for="matches" >Matches:</label><br/>
+      <select name="matches" id="matches">
+      </select>
+      <button type="button" id="formC2_update_options" class="ui-button ui-widget ui-corner-all ui-button-text-only ui-state-active"><span class="ui-button-text">Refresh</span></button>
+      <div style="padding-top:10px;padding-bottom:20px;">
+        <input type="checkbox" id="public_matches_reports"/>
+        <label for="public_matches_reports">Publish matches on the web.</label>
+      </div>
+      <input type="submit" name="submitC2" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" value="Submit" />
+    </div>
+  </form>
+
+  <div id="resultC2">
+  </div>
+
+
+</div>
+</div><!--tabsC-->

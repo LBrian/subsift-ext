@@ -1,0 +1,104 @@
+[% page.title = 'API Method: document items create (multiple)'
+   page.tab = 'api'
+%]
+
+<h2>POST /:user_id/documents/:folder_id/items</h2>
+
+<p>
+Creates multiple document items in the specified documents folder of the specified user account.
+Returns a representation of the created document items with a 201 Created HTTP status code.
+To create a single document item, see <a href="[% site.url %]/api/document-items-create">document items create</a>.
+</p>
+
+<h3>URL:</h3>
+<code>[% site.url %]/<em>user_id</em>/documents/<em>folder_id</em>/items.<em>format</em></code>
+
+<h3>Formats (<a href="formats">about return formats</a>):</h3>
+<code>[% INCLUDE 'api/_formats.phtml' %]</code>
+
+<h3>HTTP Methods (<a href="http-methods">about HTTP methods</a>):</h3>
+<code>POST</code>
+
+<h3>Requires Authentication (<a href="authentication">about authentication</a>):</h3>
+<code>true</code>
+
+<h3>Parameters:</h3>
+<ul>
+<li><code>folder_id</code>.  Required. The ID of the documents folder to create the document item in.</li>
+<li><code>items_list</code>.  Required. Create multiple document items at once. <code>items_list</code> is 
+csv format text, where each row specifies the <code>ID</code>, <code>description</code> and <code>text</code> of a single document item to create.
+Use a comma as delimiter. White space is permitted after a comma. Use double-quotes for quoting where the text contains commas or line breaks.
+If text does not contain double-quotes or line breaks then quoting can be omitted (as in some of the examples below).
+If text contains double-quotes then these must be escaped, in the standard way for csv data, by repeating the double-quotes (e.g. "a technique known as "boosting" is used" must be escaped to read, "a technique known as ""boosting"" is used").
+The encoding should be UTF-8 although this is not mandatory.
+<ul>
+<li>Example: <code>[% site.url %]/kdd09/documents/pc/items.xml<br/>
+items_list=<span class="cr"></span><br/>
+"doc1", "An example document", "Lorem ipsum dolor sit amet..."<br/>
+"doc2", "Another example document", "Ut enim ad minim veniam..."<br/>
+</code>
+<br/>
+The above example creates two document items in the document folder "pc" of the user "kdd09": one with <code>ID</code>="doc1", <code>description</code>="An example document" and <code>text</code>="Lorem ipsum dolor sit amet...";
+the other with <code>ID</code>="doc2", <code>description</code>="Another example document" and <code>text</code>="Ut enim ad minim veniam...".
+</li>
+</ul>
+  If the <code>description</code> is omitted from a row then the <code>ID</code> is also used as the <code>description</code>.
+<ul>
+<li>Example: <code>[% site.url %]/kdd09/documents/pc/items.xml<br/>
+items_list=<span class="cr"></span><br/>
+doc1,Lorem ipsum dolor sit amet...<br/>
+doc2,Ut enim ad minim veniam...<br/>
+</code>
+</li>
+</ul>
+  If both <code>ID</code> and <code>description</code> are omitted from a row then an <code>ID</code> is generated automatically and used as both <code>ID</code> and <code>description</code>.
+  A <code>text</code> value is always required on every row of <code>items_list</code>.
+<ul>
+<li>Example: <code>[% site.url %]/kdd09/documents/pc/items.xml<br/>
+items_list=<span class="cr"></span><br/>
+"Lorem ipsum dolor sit amet..."<br/>
+"Ut enim ad minim veniam..."<br/>
+</code>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>Usage Examples:</h3>
+<blockquote>
+<h4>cURL (<a href="curl">about cURL</a>):</h4>
+<code>curl -X POST -H "Token:mytoken" -d "items_list=<span class="cr"></span><br/>
+doc1,An example document,Lorem ipsum dolor sit amet...%0A<span class="cr"></span><br/>
+doc2,Another example document,Ut enim ad minim veniam...%0A" <span class="cr"></span><br/>
+-d "full=1" [% site.url %]/kdd09/documents/pc/items</code><br/>
+</blockquote>
+
+<h3>Response (<a href="return-values">about return values</a>):</h3>
+<blockquote>
+<h4>XML example:</h4>
+<pre>[% FILTER html -%]
+<?xml version="1.0" encoding="UTF-8"?>
+<result>
+  <item>
+    <name>doc1</name>
+    <created>1278025011</created>
+    <description>An example document</description>
+    <id>doc1</id>
+    <modified>1278025011</modified>
+    <source>text</source>
+    <text>Lorem ipsum dolor sit amet...</text>
+  </item>
+  <item>
+    <name>doc2</name>
+    <created>1278025011</created>
+    <description>Another example document</description>
+    <id>doc2</id>
+    <modified>1278025011</modified>
+    <source>text</source>
+    <text>Ut enim ad minim veniam...</text>
+  </item>
+</result>
+[% END %]</pre>
+</blockquote>
+

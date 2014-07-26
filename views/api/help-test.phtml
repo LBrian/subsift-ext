@@ -1,0 +1,43 @@
+[% page.title = 'API Method: help test'
+   page.tab = 'api'
+%]
+
+<h2>help/test</h2>
+<p>Returns the string "ok" with a 200 OK HTTP status code.</p>
+<p>
+  When used with <code>GET</code>, this is a simple test to see if the REST API is running.
+  When used with <code>POST</code> and a <code>user_id</code> paramater, this is a convenient 
+  and non-destructive way to check user credentials (e.g. from in a workflow/batch script).
+</p>
+
+<h3>URL:</h3>
+<code>GET [% site.url %]/help/test.<em>format</em></code><br/>
+<code>POST [% site.url %]/help/test/<em>user_id</em>.<em>format</em></code>
+
+<h3>Formats (<a href="formats">about return formats</a>):</h3>
+<code>[% INCLUDE 'api/_formats.phtml' %]</code>
+
+<h3>HTTP Methods (<a href="http-methods">about HTTP methods</a>):</h3>
+<code>GET, POST</code>
+
+<h3>Requires Authentication (<a href="authentication">about authentication</a>):</h3>
+<code>false</code> for HTTP method <code>GET</code><br/>
+<code>true</code> for HTTP method <code>POST</code>
+
+<h3>Usage Examples:</h3>
+<blockquote>
+<h4>cURL (<a href="curl">about cURL</a>):</h4>
+<code>curl [% site.url %]/help/test.xml</code>
+</blockquote>
+
+<h3>Response (<a href="return-values">about return values</a>):</h3>
+<blockquote>
+<h4>XML example:</h4>
+<pre>[% FILTER html -%]
+<?xml version="1.0" encoding="UTF-8"?>
+<result>
+  <value>ok</value>
+</result>
+[% END -%]</pre>
+</blockquote>
+

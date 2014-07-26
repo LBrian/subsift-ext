@@ -1,0 +1,106 @@
+[% page.title = 'ILRT Matcher'
+   page.tab = 'demo'
+%]
+
+[% page.head = BLOCK %]
+<link rel="stylesheet" type="text/css" media="screen" href="[% site.media %]/style/demo.css" />
+
+<script type="text/javascript" src="[% site.media %]/js/jquery-1.6.2.min.js"></script>
+
+<script type="text/javascript">
+  // make subsift's absolute urls available to scripts
+  var site = {
+    "url":   "[% site.url %]",
+    "media": "[% site.media %]",
+  };
+</script>
+<script type="text/javascript" src="[% site.media %]/js/ilrt-matcher.js"></script>
+
+<style type="text/css">
+<!--
+td.value {
+	background-image: url([% site.media %]/img/demo/gridline58.gif);
+	background-repeat: repeat-x;
+	background-position: left top;
+	border-left: 1px solid #e5e5e5;
+	border-right: 1px solid #e5e5e5;
+	padding:0;
+	border-bottom: none;
+	background-color:transparent;
+}
+td {
+	padding: 4px 6px;
+	border-bottom:1px solid #e5e5e5;
+	border-left:1px solid #e5e5e5;
+	background-color:#fff;
+}
+body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 80%;
+}
+td.value img {
+	vertical-align: middle;
+	margin: 5px 5px 5px 0;
+}
+th {
+	text-align: left;
+	vertical-align:top;
+}
+td.last {
+	border-bottom:1px solid #e5e5e5;
+}
+td.first {
+	border-top:1px solid #e5e5e5;
+}
+.auraltext
+{
+   position: absolute;
+   font-size: 0;
+   left: -1000px;
+}
+.terms {
+  font-size: 0.8em;
+  padding: 0;
+  margin: 0 0px 10px 4px;
+  width: 600px;
+}
+table {
+	background-image:url([% site.media %]/img/demo/bg_fade.png);
+	background-repeat:repeat-x;
+	background-position:left top;
+}
+caption {
+	font-size:1.5em;
+  color:#303436;
+}
+-->
+</style>
+
+[% END %]
+
+<p>
+  Enter a title, abstract or text of a paper and click Submit to compare against a pre-defined set of profiles.
+</p>
+
+<form action="" id="demoform" style="margin-bottom: 40px;">
+
+    <input type="hidden" id="url" name="url" value="[% site.url %]" />
+
+    <label for="text" class="demoform">Text:</label><br/>
+    <textarea id="text" name="text" class="demoform value" style="width: 850px;height: 150px;"></textarea><br/>
+    <div style="padding-bottom: 20px;">
+      <input type="checkbox" name="autoscale" id="id-autoscale" checked="checked"/>
+      <label for="id-autoscale" style="padding-right:10px;">Autoscale</label>
+      <input type="checkbox" name="show_values" id="id-show_values"/>
+      <label for="id-show_values" style="padding-right:10px;">Show values</label>
+      <input type="checkbox" name="show_terms" id="id-show_terms"/>
+      <label for="id-show_terms" style="padding-right:10px;">Show terms</label>
+    </div>
+    
+    <input type="submit" id="submit_btn" class="submit" value="Submit" />
+
+</form>
+
+
+<div id="result"></div>
+

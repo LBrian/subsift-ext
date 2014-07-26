@@ -1,0 +1,102 @@
+[% page.title = 'REST API Explorer' 
+   page.tab = 'demo'
+%]
+
+[% page.head = BLOCK %]
+<link rel="stylesheet" type="text/css" media="screen" href="[% site.media %]/style/demo.css" />
+
+<script type="text/javascript">
+  // make subsift's absolute urls available to scripts
+  var site = {
+    "url":   "[% site.url %]",
+    "media": "[% site.media %]",
+  };
+</script>
+<script type="text/javascript" src="[% site.media %]/js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="[% site.media %]/js/demo.js"></script>
+[% END %]
+
+<p>
+  Use the form below to try out HTTP queries to SubSift's REST web services API.
+  Select an HTTP Method and then modify the URL and list of parameter-value pairs to construct a REST query.
+  A full list of REST URL patterns and parameters can be found in the <a href="[% site.url %]/api">API documentation</a>.
+</p>
+
+<form action="" id="demoform">
+
+[%#  
+    <fieldset style="width:350px;">
+      <legend>Method</legend>
+      <input type="radio" name="method" id="method_get" class="radio" value="GET" checked="checked" />
+      <label for="method_get" class="radio">GET</label>
+      <input type="radio" name="method" id="method_post" class="radio" value="POST" />
+      <label for="method_post" class="radio">POST</label>
+      <input type="radio" name="method" id="method_put" class="radio" value="PUT" />
+      <label for="method_put" class="radio">PUT</label>
+      <input type="radio" name="method" id="method_delete" class="radio" value="DELETE" />
+      <label for="method_delete" class="radio">DELETE</label>
+      <input type="radio" name="method" id="method_head" class="radio" value="HEAD" />
+      <label for="method_get" class="radio">HEAD</label>
+    </fieldset>
+    <br/>
+%]
+    <div class="methodurlwrap">
+      <div class="methodwrap">
+      <label for="method" class="method">Method:</label><br/>
+      <select name="method" id="method" class="method">
+          <option value="GET">GET</option>
+          <option value="POST">POST</option>
+          <option value="PUT">PUT</option>
+          <option value="DELETE">DELETE</option>
+          <option value="HEAD">HEAD</option>
+      </select>
+      </div>
+    
+      <div class="urlwrap">
+      <label for="url" class="url">URL Path:</label><br/>
+      <input type="text" id="url" class="demoform url" value="/test/bookmarks"/><br/>
+      </div>
+    </div>
+
+    <fieldset style="width:780px;clear:both">
+      <legend>Parameters</legend>
+      <div class="container">
+        <div class="row">
+          <label for="name_1" class="demoform name_label">Name 1:</label>
+          <input type="text" name="name" id="name_1" class="demoform name" value="" />
+          <label for="value_1" class="demoform value_label">Value 1:</label>
+          <textarea id="value_1" name="value" class="demoform value"></textarea>
+        </div>
+      </div>
+      <input type="button" id="add_row_button" value="Add Parameter" />
+    </fieldset>
+    <br/>
+
+    <div class="tokenwrap">
+    <label for="token" class="token">Token:</label><br/>
+    <input type="text" id="token" class="demoform token" value="mytoken"/><br/>
+    </div>
+    <br/>
+    
+    <input type="submit" id="submit_btn" class="submit" value="Submit" />
+
+</form>
+
+<h2 class="api" style="padding-top: 40px;">HTTP Query</h2>
+
+<pre>
+<div id="current-query"><i>HTTP query submitted by the above form will appear here.</i></div>
+</pre>
+
+
+<h2 class="api">HTTP Response</h2>
+
+<pre>
+<div id="result"><i>SubSift's response to the HTTP query will appear here.</i></div>
+</pre>
+
+[%#
+<h2>History</h2>
+
+<div id="past-queries"></div>
+%]

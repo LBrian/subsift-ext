@@ -1,0 +1,73 @@
+[% DEFAULT
+  page.title = site.name
+%]<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>[% IF page.title != site.name %]SubSift - [% END %][% page.title %]</title>
+
+        <link rel='index' title='SubSift ' href='[% site.url %]' />
+        <link rel="alternate" type="application/rss+xml" title="SubSift Project Blog RSS Feed" href="http://subsift.ilrt.bris.ac.uk/feed/" />
+
+        <link rel="stylesheet" type="text/css" media="screen,projection" href="[% site.media %]/css/screen.css" />
+        <link rel="stylesheet" type="text/css" media="print" href="[% site.media %]/css/print.css" />
+
+[% page.head %]
+
+    </head>
+    <body>
+        [% IF page.intro %]
+            [%- page.intro -%]
+        [% ELSE %]
+            [% SWITCH page.tab %]
+            [%   CASE 'api' %]
+        <div id="banner">
+            <div class="wrap clearfix">
+                <div class="floatLeft">
+                    <div class="breadcrumbs"><a href="[% site.url %]">Home</a> &gt; [% IF NOT page.nocrumbs %]<a href="[% site.url %]/api/">API</a> &gt; [% page.title %][% ELSE %]API[% END %]</div>
+                    <h1>[% page.title %]</h1>
+                </div>
+            </div>
+        </div>
+            [%   CASE 'blog' %]
+        <div id="banner">
+            <div class="wrap clearfix">
+                <div class="floatLeft">
+                    <div class="breadcrumbs"><a href="[% site.url %]">Home</a> &gt; [% IF NOT page.nocrumbs %]<a href="http://subsift.ilrt.bris.ac.uk/blog/">Blog</a> &gt; [% page.title %][% ELSE %]Blog[% END %]</div>
+                    <h1>[% page.title %]</h1>
+                </div>
+            </div>
+        </div>
+            [%   CASE 'demo' %]
+        <div id="banner">
+            <div class="wrap clearfix">
+                <div class="floatLeft">
+                    <div class="breadcrumbs"><a href="[% site.url %]">Home</a> &gt; [% IF NOT page.nocrumbs %]<a href="[% site.url %]/demo/">Demos</a> &gt; [% page.title %][% ELSE %]Demos[% END %]</div>
+                    <h1>[% page.title %]</h1>
+                </div>
+            </div>
+        </div>
+            [%   CASE %]
+        <div id="banner">
+            <div class="wrap clearfix">
+                <div class="floatLeft">
+                    <div class="breadcrumbs"><a href="[% site.url %]">Home</a> &gt; [% page.title %]</div>
+                    <h1>[% page.title %]</h1>
+                </div>
+            </div>
+        </div>
+            [% END %]
+        [% END %]
+    
+        <div class="wrap">
+
+[% content %]
+    
+        </div>
+
+[% INCLUDE '_header.phtml' %]
+
+[% INCLUDE '_footer.phtml' %]
+
+  </body>
+</html>

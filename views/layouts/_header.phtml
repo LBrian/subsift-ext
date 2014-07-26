@@ -1,0 +1,24 @@
+        <hr class="noscreen" />
+
+        <div id="header">
+            <div class="wrap">
+                
+                <!-- Logo start -->
+                <a id="logo" href="[% site.url %]" title="SubSift">Sub<strong>Sift</strong></a>
+                <!-- Logo end -->
+        
+                <hr class="noscreen noprint" />
+        
+                <!-- Navigation start -->
+                <strong class="noscreen noprint">Navigation:</strong>
+                <ul id="nav">
+                    <li[% IF page.tab == 'home' %] class="active"[% END %]><a href="[% site.url %]">Home</a></li>
+                    <li[% IF page.tab == 'demo' %] class="active"[% END %]><a href="[% site.url %]/demo/">Demos</a></li>
+                    <li[% IF page.tab == 'doc' %] class="active"[% END %]><a href="[% site.url %]/doc/">Documentation</a></li>
+                    <li[% IF page.tab == 'api' %] class="active"[% END %]><a href="[% site.url %]/api/">API</a></li>
+                    <li[% IF page.tab == 'download' %] class="active"[% END %]><a href="[% site.url %]/download/">Download</a></li>
+                    <li[% IF page.tab == 'blog' %] class="active"[% END %]><a href="http://subsift.ilrt.bris.ac.uk/blog/">Blog</a></li>
+                </ul>
+                <!-- Navigation end -->
+            </div>
+        </div>

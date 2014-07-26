@@ -1,0 +1,307 @@
+[% 
+  page.title = 'API' 
+  page.tab = 'api'
+  page.nocrumbs = 1 
+%]
+
+<p>The SubSift REST API is organised into six functional areas described in the following sections. Each section begins with a description which is then followed by a list of API methods.</p>
+
+<ol>
+  <li><a href="#s1">1. Documents</a></li>
+  <li><a href="#s2">2. Profiles</a></li>
+  <li><a href="#s3">3. Matches</a></li>
+  <li><a href="#s4">4. Bookmarks</a></li>
+  <li><a href="#s5">5. Reports</a></li>
+  <li><a href="#s6">6. System</a></li>
+</ol>
+
+<p><strong>TIP:</strong> You can use the <a href="[% site.url %]/demo/explorer">SubSift REST API Explorer</a> web page to interactively experiment with the REST API methods online. Alternatively, use the widely available <a href="">curl</a> command line tool to experiment interactively from your own computer.</p>
+
+
+<h2 class="api">Overview</h2>
+
+<p>
+  Throughout the API, data is organised as <em>folders</em> into which data <em>items</em> are stored. This organisation is modelled on the familiar OS filing system concept of folders and files.
+  The diagram below shows a typical usage of SubSift to compare two document collections by first producing a profile of each document and then pairwise cross-comparing each of these profiles to calculate similarity "match" data for each pair. Notice how the document collections are represented in SubSift as Document Folders containing Documents (aka document items). Likewise, the Profiles (aka profile items) created to summarise the features of these documents are grouped into Profiles Folders. The Match data (aka match items) produced by comparing the profiles of a pair of Profiles Folders is then grouped into a Matches Folder.
+  </p>
+
+<img src="[% site.media %]/img/matrix_diagram.png" width="575" height="444" alt="" />
+
+<p>
+  Although the diagram depicts a sequence of transformations from a pair of document collections through to a matrix of matching statistics, a variety of useful data and metadata may be obtained at each step in the process via the REST API method. For example, a Profiles Folder makes available a full list of the vocabulary of the associated Documents Folder's set of Document Items, along with statistics on the frequency of terms (words) in the vocabulary.
+</p>
+
+<p>
+  The remainder of this page is divided into sections describing the main areas of the SubSift REST API and their available methods.
+  The first three sections cover documents, profiles and matches, as seen in the above diagram; the remaining sections cover bookmarks, reports and system methods.
+</p>
+
+
+<a name="s1"></a>
+<h2 class="api">1. Documents</h2>
+<p>
+  In SubSift, a document is a piece of text to be profiled and matched. A document will usually be the text from some external source such as the text of a web page (with or without the HTML markup) or a conference paper abstract. 
+  The text of a document is stored in SubSift as a <em>document item</em> and these are organised into <em>document folders</em>.
+  To add document items to a document folder it is necessary to first create the document folder using the <a href="documents-create">documents create</a> method.
+  Document items may then be added to the folder individually, or in bulk as a comma separated list, or all the urls 
+  from a specified bookmarks folder (described later) may be fetched and imported automatically.
+  A typical usage of document folders in SubSift is to hold a corpus of documents, for example the published works of a conference programme committee 
+  or the abstracts of papers submitted to a conference.
+  Documents can be analysed by SubSift to produce a profiles folder (described later).
+</p>
+
+<img src="[% site.media %]/img/documents_diagram.png" width="334" height="114" alt="" />
+
+<h3 class="api">1.1 Documents Folders</h3>
+<table>
+<tr><th>API Method</th><th>HTTP</th><th>URI Schema</th><th>Parameters</th></tr>
+<tr><td class="method"><a href="documents-list">documents list</a></td><td class="http">GET</td><td class="schema">/:user_id/documents</td><td class="params"><em>items</em></td></tr>
+<tr><td class="method"><a href="documents-show">documents show</a></td><td class="http">GET</td><td class="schema">/:user_id/documents/:folder_id</td><td class="params"></td></tr>
+<tr><td class="method"><a href="documents-exists">documents exists</a></td><td class="http">HEAD</td><td class="schema">/:user_id/documents/:folder_id</td><td class="params"></td></tr>
+<tr><td class="method"><a href="documents-create">documents create</a></td><td class="http">POST</td><td class="schema">/:user_id/documents/:folder_id</td><td class="params"><em>description</em>, <em>mode</em></td></tr>
+<tr><td class="method"><a href="documents-update">documents update</a></td><td class="http">PUT</td><td class="schema">/:user_id/documents/:folder_id</td><td class="params"><em>description</em>, <em>mode</em></td></tr>
+<tr><td class="method"><a href="documents-destroy">documents destroy</a></td><td class="http">DELETE</td><td class="schema">/:user_id/documents/:folder_id</td><td class="params"></td></tr>
+</table>
+
+<h3 class="api">1.2 Document Items</h3>
+<table>
+<tr><th>API Method</th><th>HTTP</th><th>URI Schema</th><th>Parameters</th></tr>
+<tr><td class="method"><a href="document-items-list">document items list</a></td><td class="http">GET</td><td class="schema">/:user_id/documents/:folder_id/items</td><td class="params"><em>full</em></td></tr>
+<tr><td class="method"><a href="document-items-show">document items show</a></td><td class="http">GET</td><td class="schema">/:user_id/documents/:folder_id/items/:item_id</td><td class="params"><em>full</em></td></tr>
+<tr><td class="method"><a href="document-items-exists">document items exists</a></td><td class="http">HEAD</td><td class="schema">/:user_id/documents/:folder_id/items/:item_id</td><td class="params"></td></tr>
+<tr><td class="method"><a href="document-items-import">document items import</a></td><td class="http">POST</td><td class="schema">/:user_id/documents/:folder_id/import/:bookmarks_id</td><td class="params"><em>depth</em>, <em>breadth</em>, <em>same_domain</em>, <em>same_stem</em>, <em>threshold</em>, <em>remove_html</em></td></tr>
+<tr><td class="method"><a href="document-items-importing">document items importing</a></td><td class="http">HEAD</td><td class="schema">/:user_id/documents/:folder_id/import/:bookmarks_id</td><td class="params"></td></tr>
+<tr><td class="method"><a href="document-items-create-multiple">document items create</a></td><td class="http">POST</td><td class="schema">/:user_id/documents/:folder_id/items</td><td class="params">items_list, <em>full</em></td></tr>
+<tr><td class="method"><a href="document-items-create">document items create</a></td><td class="http">POST</td><td class="schema">/:user_id/documents/:folder_id/items/:item_id</td><td class="params">text, <em>description</em>, <em>full</em></td></tr>
+<tr><td class="method"><a href="document-items-update-multiple">document items update</a></td><td class="http">PUT</td><td class="schema">/:user_id/documents/:folder_id/items</td><td class="params">items_list, <em>full</em></td></tr>
+<tr><td class="method"><a href="document-items-update">document items update</a></td><td class="http">PUT</td><td class="schema">/:user_id/documents/:folder_id/items/:item_id</td><td class="params"><em>text</em>, <em>description</em>, <em>full</em></td></tr>
+<tr><td class="method"><a href="document-items-destroy-all">document items destroy</a></td><td class="http">DELETE</td><td class="schema">/:user_id/documents/:folder_id/items</td><td class="params"><em>full</em></td></tr>
+<tr><td class="method"><a href="document-items-destroy">document items destroy</a></td><td class="http">DELETE</td><td class="schema">/:user_id/documents/:folder_id/items/:item_id</td><td class="params"><em>full</em></td></tr>
+</table>
+
+<a name="s2"></a>
+<h2 class="api">2. Profiles</h2>
+<p>
+  In SubSift, a profile item is a summary representation of the features of a document item, with respect to the other document items in the same documents folder.
+  Each profiles folder is a container to hold a set of profile items. All the profile items in a single profiles folder are created
+  by analysing the individual document items from a single documents folder. A profile item represents the relative uniqueness of each
+  term (word) appearing in the profiled document item, as compared to all the other document items in that document folder.
+  A typical usage of profiles in SubSift is to obtain a list of distinguishing terms, or keywords, for a document item.
+  For example automatically extracting keywords from abstracts of papers submitted to a conference. SubSift also allows a pair of profile folders
+  to be compared against each other to produce a match folder (described later).
+</p>
+
+<img src="[% site.media %]/img/profiles_diagram.png" width="334" height="224" alt="" />
+
+
+<h3 class="api">2.1 Profiles Folders</h3>
+<table>
+<tr><th>API Method</th><th>HTTP</th><th>URI Schema</th><th>Parameters</th></tr>
+<tr><td class="method"><a href="profiles-list">profiles list</a></td><td class="http">GET</td><td class="schema">/:user_id/profiles</td><td class="params"><em>sort</em>, <em>full</em>, <em>items</em></td></tr>
+<tr><td class="method"><a href="profiles-show">profiles show</a></td><td class="http">GET</td><td class="schema">/:user_id/profiles/:folder_id</td><td class="params"><em>sort</em>, <em>full</em></td></tr>
+<tr><td class="method"><a href="profiles-exists">profiles exists</a></td><td class="http">HEAD</td><td class="schema">/:user_id/profiles/:folder_id</td><td class="params"></td></tr>
+<tr><td class="method"><a href="profiles-create">profiles create</a></td><td class="http">POST</td><td class="schema">/:user_id/profiles/:folder_id/from/:document_id</td><td class="params">
+  <em>description</em>, <em>mode</em>, <em>ignore_case</em>, <em>remove_html</em>, <em>remove_stopwords</em>, <em>stopwords</em>, <em>stem</em>, <em>ngrams</em>, <em>restrict_vocabulary</em>, <em>vocabulary</em>, <em>limit</em>, <em>term_weights</em>, <em>term_weight_default</em>, <em>length</em>, <em>threshold</em>, <em>sort</em>, <em>full</em></td></tr>
+<tr><td class="method"></td><td class="http">POST</td><td class="schema">/:user_id/profiles/:folder_id</td><td class="params">
+  <em>document_id</em>, <em>description</em>, <em>mode</em>, <em>ignore_case</em>, <em>remove_html</em>, <em>remove_stopwords</em>, <em>stopwords</em>, <em>stem</em>, <em>ngrams</em>, <em>restrict_vocabulary</em>, <em>vocabulary</em>, <em>limit</em>, <em>term_weights</em>, <em>term_weight_default</em>, <em>length</em>, <em>threshold</em>, <em>sort</em>, <em>full</em></td></tr>
+<tr><td class="method"><a href="profiles-update">profiles update</a></td><td class="http">PUT</td><td class="schema">/:user_id/profiles/:folder_id/from/:document_id</td><td class="params">
+  <em>description</em>, <em>mode</em>, <em>ignore_case</em>, <em>remove_html</em>, <em>remove_stopwords</em>, <em>stopwords</em>, <em>stem</em>, <em>ngrams</em>, <em>restrict_vocabulary</em>, <em>vocabulary</em>, <em>limit</em>, <em>term_weights</em>, <em>term_weight_default</em>, <em>length</em>, <em>threshold</em>, <em>recalculate</em>, <em>sort</em>, <em>full</em></td></tr>
+<tr><td class="method"></td><td class="http">PUT</td><td class="schema">/:user_id/profiles/:folder_id</td><td class="params">
+  <em>document_id</em>, <em>description</em>, <em>mode</em>, <em>ignore_case</em>, <em>remove_html</em>, <em>remove_stopwords</em>, <em>stopwords</em>, <em>stem</em>, <em>ngrams</em>, <em>restrict_vocabulary</em>, <em>vocabulary</em>, <em>limit</em>, <em>term_weights</em>, <em>term_weight_default</em>, <em>length</em>, <em>threshold</em>, <em>recalculate</em>, <em>sort</em>, <em>full</em></td></tr>
+<tr><td class="method"><a href="profiles-destroy">profiles destroy</a></td><td class="http">DELETE</td><td class="schema">/:user_id/profiles/:folder_id</td><td class="params"><em>sort</em>, <em>full</em></td></tr>
+<tr><td class="method"><a href="profiles-recalculate">profiles recalculate</a></td><td class="http">POST</td><td class="schema">/:user_id/profiles/:folder_id/recalculate</td><td class="params"><em>sort</em>, <em>full</em></td></tr>
+</table>
+
+<h3 class="api">2.2 Profile Items</h3>
+<table>
+<tr><th>API Method</th><th>HTTP</th><th>URI Schema</th><th>Parameters</th></tr>
+<tr><td class="method"><a href="profile-items-list">profile items list</a></td><td class="http">GET</td><td class="schema">/:user_id/profiles/:folder_id/items</td><td class="params"><em>sort</em>, <em>full</em></td></tr>
+<tr><td class="method"><a href="profile-items-show">profile items show</a></td><td class="http">GET</td><td class="schema">/:user_id/profiles/:folder_id/items/:item_id</td><td class="params"><em>sort</em>, <em>full</em></td></tr>
+<tr><td class="method"><a href="profile-items-exists">profile items exists</a></td><td class="http">HEAD</td><td class="schema">/:user_id/profiles/:folder_id/items/:item_id</td><td class="params"></td></tr>
+</table>
+
+<a name="s3"></a>
+<h2 class="api">3. Matches</h2>
+<p>
+  In SubSift, a match item is a similarity score (and supporting statistics) representing how alike a specific pair of profile items are.
+  Each matches folder is a container to hold a list of match items. A matches folder is created by analysing every pairing of profile
+  items drawn from a pair of profiles folders. Each match item scores the similarity of a single profile from the first profiles folder against
+  every profile from the second profiles folder.
+  A typical usage of such a comparison is to match submitted conference abstracts with the bibliography pages of programme committee members
+  in order to rank potential reviewers for each paper and visa versa.
+</p>
+
+<img src="[% site.media %]/img/matches_pairs_diagram.png" width="425" height="368" alt="" />
+
+
+<h3 class="api">3.1 Matches Folders</h3>
+<table>
+<tr><th>API Method</th><th>HTTP</th><th>URI Schema</th><th>Parameters</th></tr>
+<tr><td class="method"><a href="matches-list">matches list</a></td><td class="http">GET</td><td class="schema">/:user_id/matches</td><td class="params"><em>sort</em>, <em>full</em></td></tr>
+<tr><td class="method"><a href="matches-show">matches show</a></td><td class="http">GET</td><td class="schema">/:user_id/matches/:folder_id</td><td class="params"><em>sort</em>, <em>full</em></td></tr>
+<tr><td class="method"><a href="matches-exists">matches exists</a></td><td class="http">HEAD</td><td class="schema">/:user_id/matches/:folder_id</td><td class="params"></td></tr>
+<tr><td class="method"><a href="matches-create">matches create</a></td><td class="http">POST</td><td class="schema">/:user_id/matches/:folder_id/profiles/:profiles_id1/<span class="cr"></span><br/>with/:profiles_id2</td><td class="params"><em>description</em>, <em>mode</em>, <em>limit</em>, <em>threshold</em>, <em>sort</em>, <em>full</em></td></tr>
+<tr><td class="method"></td><td class="http">POST</td><td class="schema">/:user_id/matches/:folder_id</td><td class="params"><em>profiles_id1</em>, <em>profiles_id2</em>, <em>description</em>, <em>mode</em>, <em>limit</em>, <em>threshold</em>, <em>sort</em>, <em>full</em></td></tr>
+<tr><td class="method"><a href="matches-update">matches update</a></td><td class="http">PUT</td><td class="schema">/:user_id/matches/:folder_id/profiles/:profiles_id1/<span class="cr"></span><br/>with/:profiles_id2</td><td class="params"><em>description</em>, <em>mode</em>, <em>limit</em>, <em>threshold</em>, <em>sort</em>, <em>full</em></td></tr>
+<tr><td class="method"><a href="matches-update">matches update</a></td><td class="http">PUT</td><td class="schema">/:user_id/matches/:folder_id</td><td class="params"><em>profiles_id1</em>, <em>profiles_id2</em>, <em>description</em>, <em>mode</em>, <em>limit</em>, <em>threshold</em>, <em>sort</em>, <em>full</em></td></tr>
+<tr><td class="method"><a href="matches-destroy">matches destroy</a></td><td class="http">DELETE</td><td class="schema">/:user_id/matches/:folder_id</td><td class="params"><em>sort</em>, <em>full</em></td></tr>
+<tr><td class="method"><a href="matches-recalculate">matches recalculate</a></td><td class="http">POST</td><td class="schema">/:user_id/matches/:folder_id/recalculate</td><td class="params"><em>sort</em>, <em>full</em></td></tr>
+</table>
+
+<h3 class="api">3.2 Match Items</h3>
+<table>
+<tr><th>API Method</th><th>HTTP</th><th>URI Schema</th><th>Parameters</th></tr>
+<tr><td class="method"><a href="match-items-list">match items list</a></td><td class="http">GET</td><td class="schema">/:user_id/matches/:folder_id/items</td><td class="params"><em>profiles_id</em>, <em>sort</em>, <em>threshold3</em>, <em>threshold2</em>, <em>threshold1</em>, <em>full</em></td></tr>
+<tr><td class="method"><a href="match-items-show">match items show</a></td><td class="http">GET</td><td class="schema">/:user_id/matches/:folder_id/items/:item_id</td><td class="params"><em>profiles_id</em>, <em>sort</em>, <em>threshold3</em>, <em>threshold2</em>, <em>threshold1</em>, <em>full</em></td></tr>
+<tr><td class="method"><a href="match-items-exists">match items exists</a></td><td class="http">HEAD</td><td class="schema">/:user_id/matches/:folder_id/items/:item_id</td><td class="params"><em>profiles_id</em></td></tr>
+</table>
+
+[%#  NOT COMPLETELY IMPLEMENTED YET...
+<h3 class="api">3.3 Match Pairs</h3>
+<table>
+<tr><th>API Method</th><th>HTTP</th><th>URI Schema</th><th>Parameters</th></tr>
+<tr><td class="method"><a href="match-pairs-list">match pairs list</a></td><td class="http">GET</td><td class="schema">/:user_id/matches/:folder_id/pairs</td><td class="params"><em>full</em></td></tr>
+<tr><td class="method"><a href="match-pairs-show">match pairs show</a></td><td class="http">GET</td><td class="schema">/:user_id/matches/:folder_id/pairs/:pair_id</td><td class="params"><em>full</em></td></tr>
+<tr><td class="method"><a href="match-pairs-exists">match pairs exists</a></td><td class="http">HEAD</td><td class="schema">/:user_id/matches/:folder_id/pairs/:pair_id</td><td class="params"></td></tr>
+</table>
+%]
+
+<h3 class="api">3.3 Match Matrix</h3>
+
+<p>
+  Each match folder can be viewed as a matrix of match items as shown in the diagram below.
+  The match matrix may be retrieved via API methods and saved as a file to be subsequently 
+  imported into other tools such as Matlab or incorporated into application software.
+</p>
+
+<img src="[% site.media %]/img/matches_matrix_diagram.png" width="454" height="334" alt="" />
+
+
+<table>
+<tr><th>API Method</th><th>HTTP</th><th>URI Schema</th><th>Parameters</th></tr>
+<tr><td class="method"><a href="match-matrix-show">match matrix show</a></td><td class="http">GET</td><td class="schema">/:user_id/matches/:folder_id/matrix/:type</td><td class="params"><em>separator</em></td></tr>
+<tr><td class="method"><a href="match-matrix-show-pairs">match matrix show pairs</a></td><td class="http">GET</td><td class="schema">/:user_id/matches/:folder_id/pairs</td><td class="params"><em>profiles_id</em></td></tr>
+</table>
+
+
+
+<a name="s4"></a>
+<h2 class="api">4. Bookmarks</h2>
+<p>
+  For convenience, SubSift provides bookmarks as a way of building lists of urls that can then be used to add document items to a documents folder.
+  Each bookmarks folder is a container to hold a list of bookmarks (i.e. urls).
+  This is analogous to the list of bookmarks that web browsers allow you to build up as you surf the web.
+  In SubSift, bookmarks folders are used to specify lists of urls, which are called <em>bookmark items</em> in SubSift's terminology.
+  To make use of a bookmarks folder it must be imported into a document using the <a href="[% site.url %]/api/document-items-import">document items import</a> API method described earlier.
+  Doing so will add the bookmarks to SubSift's web harvester queue. The web harvester robot will then (gradually) 
+  fetch each of the web pages referred to by the bookmarks and add their page source (i.e. typically HTML text) to the document folder.
+  The retrieved web pages are added to the document verbatim; each one creating a single document item in the document.
+  A typical usage of bookmarks folders in SubSift is to specify a list of bibliography web pages for all members of a conference programme committee.
+</p>
+
+<img src="[% site.media %]/img/bookmarks_diagram.png" width="336" height="218" alt="" />
+
+
+<h3 class="api">4.1 Bookmarks Folders</h3>
+<table>
+<tr><th>API Method</th><th>HTTP</th><th>URI Schema</th><th>Parameters</th></tr>
+<tr><td class="method"><a href="bookmarks-list">bookmarks folders list</a></td><td class="http">GET</td><td class="schema">/:user_id/bookmarks</td><td class="params"></td></tr>
+<tr><td class="method"><a href="bookmarks-show">bookmarks folder show</a></td><td class="http">GET</td><td class="schema">/:user_id/bookmarks/:folder_id</td><td class="params"></td></tr>
+<tr><td class="method"><a href="bookmarks-exists">bookmarks folder exists</a></td><td class="http">HEAD</td><td class="schema">/:user_id/bookmarks/:folder_id</td><td class="params"></td></tr>
+<tr><td class="method"><a href="bookmarks-create">bookmarks folder create</a></td><td class="http">POST</td><td class="schema">/:user_id/bookmarks/:folder_id</td><td class="params"><em>description</em>, <em>mode</em></td></tr>
+<tr><td class="method"><a href="bookmarks-update">bookmarks folder update</a></td><td class="http">PUT</td><td class="schema">/:user_id/bookmarks/:folder_id</td><td class="params"><em>description</em>, <em>mode</em></td></tr>
+<tr><td class="method"><a href="bookmarks-destroy">bookmarks folder destroy</a></td><td class="http">DELETE</td><td class="schema">/:user_id/bookmarks/:folder_id</td><td class="params"></td></tr>
+</table>
+
+<h3 class="api">4.2 Bookmark Items</h3>
+<table>
+<tr><th>API Method</th><th>HTTP</th><th>URI Schema</th><th>Parameters</th></tr>
+<tr><td class="method"><a href="bookmark-items-list">bookmark items list</a></td><td class="http">GET</td><td class="schema">/:user_id/bookmarks/:folder_id/items</td><td class="params"></td></tr>
+<tr><td class="method"><a href="bookmark-items-show">bookmark items show</a></td><td class="http">GET</td><td class="schema">/:user_id/bookmarks/:folder_id/items/:item_id</td><td class="params"></td></tr>
+<tr><td class="method"><a href="bookmark-items-exists">bookmark items exists</a></td><td class="http">HEAD</td><td class="schema">/:user_id/bookmarks/:folder_id/items/:item_id</td><td class="params"></td></tr>
+<tr><td class="method"><a href="bookmark-items-create-multiple">bookmark items create</a></td><td class="http">POST</td><td class="schema">/:user_id/bookmarks/:folder_id/items</td><td class="params">items_list</td></tr>
+<tr><td class="method"><a href="bookmark-items-create">bookmark items create</a></td><td class="http">POST</td><td class="schema">/:user_id/bookmarks/:folder_id/items/:item_id</td><td class="params">item_url, <em>description</em></td></tr>
+<tr><td class="method"><a href="bookmark-items-update-multiple">bookmark items update</a></td><td class="http">PUT</td><td class="schema">/:user_id/bookmarks/:folder_id/items</td><td class="params">items_list</td></tr>
+<tr><td class="method"><a href="bookmark-items-update">bookmark items update</a></td><td class="http">PUT</td><td class="schema">/:user_id/bookmarks/:folder_id/items/:item_id</td><td class="params"><em>item_url</em>, <em>description</em></td></tr>
+<tr><td class="method"><a href="bookmark-items-destroy-all">bookmark items destroy</a></td><td class="http">DELETE</td><td class="schema">/:user_id/bookmarks/:folder_id/items</td><td class="params"></td></tr>
+<tr><td class="method"><a href="bookmark-items-destroy">bookmark items destroy</a></td><td class="http">DELETE</td><td class="schema">/:user_id/bookmarks/:folder_id/items/:item_id</td><td class="params"></td></tr>
+</table>
+
+
+<a name="s5"></a>
+<h2 class="api">5. Reports</h2>
+<p>
+  For convenience, SubSift provides report generation to present data created in profiles and matches folders in
+  human-centric formats, such as HTML, rather than machine-centric formats, such as XML, JSON, etc. 
+  Reports are generated as files in <em>report folders</em>, which have the same creation and access control
+  methods supported by the other folder types in SubSift's REST API.
+  Unlike other SubSift folders, <em>report folders</em> do not contain API addressable data items; instead they contain files
+  which may be viewed or downloaded as ordinary web pages.
+</p>
+
+<h3 class="api">5.1 Reports Folders</h3>
+<p>
+  SubSift <em>reports folders</em> provide an API controllable way of generating HTML reports detailing specific profiles and matches.
+  A <em>report folder</em> may be published to the web with either public or restricted access. Alternatively, <em>reports folders</em>
+  may be downloaded as a zip archive for distribution or publishing to third-party web servers or content management systems.
+</p>
+<table>
+<tr><th>API Method</th><th>HTTP</th><th>URI Schema</th><th>Parameters</th></tr>
+<tr><td class="method"><a href="reports-list">reports folders list</a></td><td class="http">GET</td><td class="schema">/:user_id/reports</td><td class="params"></td></tr>
+<tr><td class="method"><a href="reports-show">reports folder show</a></td><td class="http">GET</td><td class="schema">/:user_id/reports/:folder_id.:format</td><td class="params"></td></tr>
+<tr><td class="method"><a href="reports-exists">reports folder exists</a></td><td class="http">HEAD</td><td class="schema">/:user_id/reports/:folder_id</td><td class="params"></td></tr>
+<tr><td class="method"><a href="reports-create-profiles">reports folder create</a></td><td class="http">POST</td><td class="schema">/:user_id/reports/:folder_id/profiles/:profiles_id</td><td class="params"><em>description</em>, <em>mode</em>, <em>type</em></td></tr>
+<tr><td class="method"><a href="reports-create-matches">reports folder create</a></td><td class="http">POST</td><td class="schema">/:user_id/reports/:folder_id/matches/:matches_id</td><td class="params"><em>description</em>, <em>mode</em>, <em>type</em></td></tr>
+<!--
+<tr><td class="method"><a href="reports-update">reports folder update</a></td><td class="http">PUT</td><td class="schema">/:user_id/reports/:folder_id/profiles/:profiles_id</td><td class="params"><em>description</em>, <em>mode</em></td></tr>
+<tr><td class="method"></td><td class="http">PUT</td><td class="schema">/:user_id/reports/:folder_id/matches/:matches_id</td><td class="params"><em>description</em>, <em>mode</em></td></tr>
+-->
+<tr><td class="method"><a href="reports-destroy">reports folder destroy</a></td><td class="http">DELETE</td><td class="schema">/:user_id/reports/:folder_id</td><td class="params"></td></tr>
+</table>
+
+<h3 class="api">5.2 Report Files</h3>
+<p>
+  Each <em>reports folder</em> contains report files generated when the folder was created or last updated.
+  The exact names and types of files generated depend on the report type.
+  However, there will always be an <code>index.html</code> file representing the home page of the report,
+  and an <code>index.zip</code> file which contains all the files in the report as a downloadable archive.
+  If the <em>report folders</em> is set to <code>public</code> then it functions as a self-contained website
+  which may be publicised via its URL or linked to in the normal way from other web pages.
+</p>
+<table>
+<tr><th>API Method</th><th>HTTP</th><th>URI Schema</th><th>Parameters</th></tr>
+<tr><td class="method"><a href="report-homepage">report homepage</a></td><td class="http">GET</td><td class="schema">/:user_id/reports/:folder_id[.html]</td><td class="params"></td></tr>
+<tr><td class="method"></td><td class="http">GET</td><td class="schema">/:user_id/reports/:folder_id/index[.html]</td><td class="params"></td></tr>
+<tr><td class="method"><a href="report-download">report download</a></td><td class="http">GET</td><td class="schema">/:user_id/reports/:folder_id.zip</td><td class="params"></td></tr>
+<tr><td class="method"></td><td class="http">GET</td><td class="schema">/:user_id/reports/:folder_id/index.zip</td><td class="params"></td></tr>
+</table>
+
+
+
+<a name="s6"></a>
+<h2 class="api">6. System</h2>
+
+<p>
+  System methods provide functionality that does not fit into the folders and items model employed by the rest of the API.
+</p>
+
+<h3 class="api">6.1 System: Status</h3>
+<p>
+  The status/test methods can be used to check, for the service overall or for an individual user, that the SubSift REST API is up and running as normal.
+</p>
+<table>
+<tr><th>API Method</th><th>HTTP</th><th>URI Schema</th><th>Parameters</th></tr>
+<tr><td class="method"><a href="status-test">status test</a></td><td class="http">GET</td><td class="schema">/status/test</td><td class="params"></td></tr>
+<tr><td class="method"><a href="status-test">status test</a></td><td class="http">POST</td><td class="schema">/status/test/:user_id</td><td class="params"></td></tr>
+</table>
+
+<h3 class="api">6.2 System: Workflow</h3>
+<p>SubSift has a minimalist <em>workflow engine</em> that enables the creation and batch execution of sequences of API method calls specified in a simple workflow language (documented on the create method below). Creating a workflow adds its sequence of commands to the workflow engine's <em>enactment</em> queue, eventually resulting in each method call in the workflow being executed one after the other. Using workflows greatly simplifies the use of the SubSift API by enabling this batch execution of method calls without the need for multiple consecutive HTTP requests from the client program. All the client program needs to do is wait for the workflow to complete, which can be detected by periodically issuing the <code>enacting</code> method. The downside is that workflows run as background tasks on the server and will not execute as quickly as if the sequence of methods were issues as multiple HTTP requests by the client. However, for non-interactive applications, this is the simplest way of using SubSift.</p>
+<table>
+<tr><th>API Method</th><th>HTTP</th><th>URI Schema</th><th>Parameters</th></tr>
+<tr><td class="method"><a href="workflow-create">workflow create</a></td><td class="http">POST</td><td class="schema">/:user_id/workflow/:workflow_id</td><td class="params">commands</td></tr>
+<tr><td class="method"><a href="workflow-enacting">workflow enacting</a></td><td class="http">HEAD</td><td class="schema">/:user_id/workflow/:workflow_id</td><td class="params"></td></tr>
+<tr><td class="method"><a href="workflow-destroy">workflow destroy</a></td><td class="http">DELETE</td><td class="schema">/:user_id/workflow/:workflow_id</td><td class="params"></td></tr>
+</table>
+
+

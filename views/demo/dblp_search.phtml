@@ -1,0 +1,35 @@
+[% page.title = 'DBLP Author Finder (Step 1 of 3)' 
+   page.tab = 'demo'
+%]
+
+[% page.head = BLOCK %]
+<link rel="stylesheet" type="text/css" media="screen" href="[% site.media %]/style/demo.css" />
+[% END %]
+
+	  <p>
+	    Enter a list of reviewer names, one per line. 
+	    Then click Submit to search for each name on 
+	    <a href="http://www.informatik.uni-trier.de/~ley/db/" target="dblp">DBLP</a> 
+	    and compile possible author page URLs for each name.
+    </p>
+
+    <form action="dblp_search_results" method="post" id="demoform">
+
+      <label for="names_list" class="demoform">Author Names:</label><br/>
+      <textarea id="names_list" name="names_list" style="width: 450px;height: 300px;" wrap="off"></textarea><br/>
+      <div style="padding-top:10px;padding-bottom:20px;">
+        <input type="checkbox" name="refresh" id="refresh"/>
+        <label for="refresh">Refresh cached copies of DBLP author pages.</label>
+      </div>
+      <br/>
+    
+      <input type="submit" id="submit_btn" class="submit" value="Submit" />
+
+    </form>
+  
+    <p class="note alt">
+      IMPORTANT: This can take 5-10 seconds per name unless the author's page has already been cached by SubSift. 
+      A new page is not displayed until the search has finished. 
+      <strong>Do not click Submit again</strong> or it will take even longer!
+    </p>
+

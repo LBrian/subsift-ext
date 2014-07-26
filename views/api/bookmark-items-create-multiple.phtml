@@ -1,0 +1,99 @@
+[% page.title = 'API Method: bookmark items create (multiple)'
+   page.tab = 'api'
+%]
+
+<h2>POST /:user_id/bookmarks/:folder_id/items</h2>
+
+<p>
+Creates multiple bookmark items in the specified bookmarks folder of the specified user account.
+Returns a representation of the created bookmark items with a 201 Created HTTP status code.
+To create a single bookmark item, see <a href="[% site.url %]/api/bookmark-items-create">bookmark items create</a>.
+</p>
+
+<h3>URL:</h3>
+<code>[% site.url %]/<em>user_id</em>/bookmarks/<em>folder_id</em>/items.<em>format</em></code>
+
+<h3>Formats (<a href="formats">about return formats</a>):</h3>
+<code>[% INCLUDE 'api/_formats.phtml' %]</code>
+
+<h3>HTTP Methods (<a href="http-methods">about HTTP methods</a>):</h3>
+<code>POST</code>
+
+<h3>Requires Authentication (<a href="authentication">about authentication</a>):</h3>
+<code>true</code>
+
+<h3>Parameters:</h3>
+<ul>
+<li><code>folder_id</code>.  Required. The ID of the bookmarks folder to create the bookmark item in.</li>
+<li><code>items_list</code>.  Required. Create multiple bookmark items at once. <code>items_list</code> is 
+csv format text, where each row specifies the <code>ID</code>, <code>description</code> and <code>url</code> of a single bookmark item to create.
+Use a comma as delimiter. White space is permitted after a comma. Use double-quotes for quoting where the text contains commas or line breaks.
+If text does not contain double-quotes or line breaks then quoting can be omitted (as in some of the examples below).
+If text contains double-quotes then these must be escaped, in the standard way for csv data, by repeating the double-quotes (e.g. "Mike "Mobile" Jones" must be escaped to read, "Mike ""Mobile"" Jones").
+The encoding should be UTF-8 although this is not mandatory.
+<ul>
+<li>Example: <code>[% site.url %]/kdd09/bookmarks/pc/items.xml<br/>
+items_list=<span class="cr"></span><br/>
+"Peter Flach", "Peter A. Flach's homepage", "http://www.cs.bris.ac.uk/~flach"<br/>
+"Simon Price", "Simon Price's homepage", "http://www.cs.bris.ac.uk/~price"<br/>
+</code>
+<br/>
+The above example creates two bookmark items in the bookmarks folder "pc" of the user "kdd09": one with <code>ID</code>="Peter Flach", <code>description</code>="Peter A. Flach's homepage" and <code>url</code>="http://www.cs.bris.ac.uk/~flach";
+the other with <code>ID</code>="Simon Price", <code>description</code>="Simon Price's homepage" and <code>url</code>="http://www.cs.bris.ac.uk/~price".
+</li>
+</ul>
+  If the <code>description</code> is omitted from a row then the <code>ID</code> is also used as the <code>description</code>.
+<ul>
+<li>Example: <code>[% site.url %]/kdd09/bookmarks/pc/items.xml<br/>
+items_list=<span class="cr"></span><br/>
+Peter Flach,http://www.cs.bris.ac.uk/~flach<br/>
+Simon Price,http://www.cs.bris.ac.uk/~price<br/>
+</code>
+</li>
+</ul>
+  If both <code>ID</code> and <code>description</code> are omitted from a row then a <code>ID</code> is generated automatically and used as both <code>ID</code> and <code>description</code>.
+  A <code>url</code> is always required on every row of <code>items_list</code>.
+<ul>
+<li>Example: <code>[% site.url %]/kdd09/bookmarks/pc/items.xml<br/>
+items_list=<span class="cr"></span><br/>
+http://www.cs.bris.ac.uk/~flach<br/>
+http://www.cs.bris.ac.uk/~price<br/>
+</code>
+</li>
+</ul>
+</li>
+</ul>
+
+<h3>Usage Examples:</h3>
+<blockquote>
+<h4>cURL (<a href="curl">about cURL</a>):</h4>
+<code>curl -X POST -H "Token:mytoken" -d "items_list=<span class="cr"></span><br/>
+Peter Flach,http://www.cs.bris.ac.uk/~flach%0A<span class="cr"></span><br/>
+Simon Price,http://www.cs.bris.ac.uk/~price%0A" <span class="cr"></span><br/>
+[% site.url %]/kdd09/bookmarks/pc/items</code><br/>
+</blockquote>
+
+<h3>Response (<a href="return-values">about return values</a>):</h3>
+<blockquote>
+<h4>XML example:</h4>
+<pre>[% FILTER html -%]
+<?xml version="1.0" encoding="UTF-8"?>
+<result>
+  <bookmark>
+    <name>Peter Flach</name>
+    <created>1278023220</created>
+    <description>Peter Flach</description>
+    <modified>1278023220</modified>
+    <url>http://www.cs.bris.ac.uk/~flach</url>
+  </bookmark>
+  <bookmark>
+    <name>Simon Price</name>
+    <created>1278023220</created>
+    <description>Simon Price</description>
+    <modified>1278023220</modified>
+    <url>http://www.cs.bris.ac.uk/~price</url>
+  </bookmark>
+</result>[% END %]</pre>
+</blockquote>
+
+

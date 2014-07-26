@@ -1,0 +1,73 @@
+* { margin:0; padding:0; }
+body, div, span, p, a, img, ul, ol, li, table, th, tr, td, form, fieldset, legend, dl, dt, dd, blockquote, applet, object { border:0; }
+ul, ol {list-style-type:none}
+body { padding: 0; font: normal 12px Arial,sans-serif; color: #000;}
+p {line-height: 1.9em;padding: 0 0 15px 0;}
+
+/* LINKS ---------------------------------------------------------------------------------------------------------- */
+a {color: #076fb0;text-decoration: underline;}
+a:link {color: #076fb0;}
+a:focus {color: #076fb0; outline: 0}
+a:visited {color: #063654}
+a:hover {color: #063654;text-decoration: none;}
+a.more {}
+
+
+/* H1 - H5 -------------------------------------------------------------------------------------------------------- */
+h1, h2, h3, h4, h5, h6 { margin:15px 0 15px 0; }
+h1 { font-size: 1.6em;  margin: 0; color: #000;}
+h2 { font-size: 1.45em; margin: 0 0 15px; color: #000;font-weight: normal;padding: 0;font-family: Georgia;}
+h3 { font-size:1.1em; margin: 0 0 15px; color: #000;  padding: 0 0 5px;}
+h4 { font-size:1.0em; color: #000 }
+h5 { font-size:1.0em; }
+
+/* LAYOUT --------------------------------------------------------------------------------------------------------- */
+
+    /* HEADER ----------------------------------------------------------------------------------------------------- */
+
+        /* logo */
+        h1 a { display: block; color: #000;text-decoration: none;}
+            h1 a span {display: none}
+
+        /* navigation */
+        ul#nav {display: none}
+
+        /* header box */
+        .box {background: #fff;border: 0;padding: 20px 0;margin: 20px 0;color: #000}
+            .box h2 {font-family: Arial; font-size: 1.2em;font-weight: bold; color: #000;margin: 0 0 5px;padding: 0; border: 0;}
+            .box p {margin: 0; padding: 0;}
+
+    .padding {padding: 0 0 20px;}
+
+    /* COLS ----------------------------------------------------------------------------------------------------------- */
+    ul.cols {margin: 15px 0;}
+        ul.cols li {}
+            ul.cols li.center {margin: 0;text-align: left;}
+                ul.cols li h3 {font-size: 1.2em;font-weight: bold;color: #000;padding: 10px 0 10px 0;color: #435b6a;border-bottom: 1px solid #d3dbdf}
+                ul.cols li p {padding: 0 0 10px 0}
+                ul.cols li a.more {padding-left: 0;}
+
+  	/* FOOTER ----------------------------------------------------------------------------------------------------- */
+    .footer {background: #fff;height: 50px; line-height: 50px;padding: 0;font-size: 0.9em; margin: 0;clear: both; overflow: hidden;}
+        .footer span {color: #7c7e7f;display: block; padding-top: 3px;}
+        .footer a {color: #7c7e7f;}
+        .footer a.pueblo-templates {display: inline-block;position: relative;width: 110px; height: 15px;line-height: 15px;margin-right: 20px;}
+            .footer a.pueblo-templates span {display: none}
+
+
+
+/* OTHER ----------------------------------------------------------------------------------------------------- */
+hr { display:block; height:1px; margin:10px 0; padding:0; border:0 solid #CCC; background:#CCC; color:#CCC;}
+.clear { clear:both; display: block; height:0;line-height:0;font-size:0; width: 100%;}
+.noscreen { display:none; }
+.flt-l {float: left;}
+.flt-r {float: right;}
+.bold {font-weight: bold;}
+.center {text-align: center;}
+.noborder {border: 0;}
+/* clearfix */
+.clearfix:after {content: ".";display: block;height: 0;clear: both;visibility: hidden}
+.clearfix {display: inline-block;}
+/* hidden for ie mac \*/
+* html .clearfix {height: 1%;}
+.clearfix {display: block;}

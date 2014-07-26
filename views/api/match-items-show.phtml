@@ -1,0 +1,159 @@
+[% page.title = 'API Method: match items show' 
+   page.tab = 'api'
+%]
+
+<h2>GET /:user_id/matches/:folder_id/items/:item_id</h2>
+
+<p>Returns a representation of the specified matches item with a 200 OK HTTP status code.</p>
+
+<h3>URL:</h3>
+<code>[% site.url %]/<em>user_id</em>/matches/<em>folder_id</em>/items/<em>item_id</em>.<em>format</em></code>
+
+<h3>Formats (<a href="formats">about return formats</a>):</h3>
+<code>[% INCLUDE 'api/_formats.phtml' %]</code>
+
+<h3>HTTP Methods (<a href="http-methods">about HTTP methods</a>):</h3>
+<code>GET</code>
+
+<h3>Requires Authentication (<a href="authentication">about authentication</a>):</h3>
+<code>true</code> &nbsp;if folder's <code>mode</code> property is set to <code>private</code><br/>
+<code>false</code> &nbsp;if folder's <code>mode</code> property is set to <code>public</code>
+
+<h3>Parameters:</h3>
+<ul>
+<li><code>folder_id</code>.  Required. The ID of the matches folder to retrieve from.</li>
+<li><code>item_id</code>.  Required. The ID of the match item to retrieve.</li>
+<li><code>profiles_id</code>.  Optional. The ID of the profiles folder from which the match item originated.
+This parameter allows for the disambiguation of <code>item_id</code> in cases where the same id occurs in
+both of the profiles folders being matched.</li>
+<li><code><em>sort</em></code>.  Optional. Number of the term data column to sort the returned <code>term</code> statistics on.
+Numeric data columns are sorted in descending order. Textual data columns are sorted in ascending alphabetical order.
+Values of <code>sort</code> must be one of:
+<ul>
+<li><code>0</code> for <code>name</code>, the term name (i.e. the text of the word or keyword).</li>
+<li><code>1</code> for <code>n</code>, the term occurrences (i.e. the number of times the term occurs in the document).</li>
+<li><code>2</code> for <code>tf</code>, the term frequency (i.e. the ratio of <code>n</code> to the total number of term occurrences in the document).</li>
+<li><code>3</code> for <code>idf</code>, the inverse document frequency (i.e. <em>log</em><sub>2</sub> of the ratio of the total number of documents to the number of documents in which the term occurs).</li>
+<li><code>4</code> for <code>tfidf</code>, the tf-idf score (i.e. the product of <code>tf</code> and <code>idf</code>).</li>
+<li><code>5</code> for <code>wg</code>, the global term weight (i.e. the weight for this term across all items in the folder).</li>
+<li><code>6</code> for <code>wl</code>, the local term weight (i.e. the weight for this term in this item).</li>
+<li><code>7</code> for <code>wtfidf</code>, the weighted tf-idf score (i.e. the product of <code>tfidf</code>, <code>wg</code> and <code>wl</code>).</li>
+</ul>
+The default when no value is supplied is <code>7</code>.
+</li>
+<li><code><em>threshold3</em></code>, <code><em>threshold2</em></code>, <code><em>threshold1</em></code>.  Optional. 
+  Threshold scores, for which a <code>bid</code> value of 3, 2 or 1 (otherwise 0) respectively, will be assigned to each match item.
+  The thresholds partition the matched items (e.g. papers) into four bid categories ranging from 0 (lowest bid) to 3 (highest bid).
+  Some experimentation is required to manually determine threshold values that give reasonable numbers of bids of each category.
+  <ul>
+    <li>
+      If the three thresholds are given as numbers between 0 and 1 then SubSift interprets them as score values above which the corresponding bid will be assigned
+      (i.e. if <code>score</code> &gt; <code>threshold3</code> then <code>bid</code> = 3; if <code>score</code> &gt; <code>threshold2</code> then <code>bid</code> = 2; if <code>score</code> &gt; <code>threshold1</code> then <code>bid</code> = 1; otherwise <code>bid</code> = 0).
+    </li>
+    <li>
+      If any of the three thresholds are given as numbers greater than 1 then SubSift interprets them as rank values below which the corresponding bid will be assigned 
+      (e.g. if <code>threshold3</code> is 5 then the top five ranked items will be <code>bid</code> = 3; if <code>threshold2</code> is 10 then the next 10 most highly ranked items will be <code>bid</code> = 2; if <code>threshold1</code> is 20 then then the next 20 most highly ranked items will be <code>bid</code> = 1; otherwise <code>bid</code> = 0).
+      This allows absolute numbers of bids to be assigned for each match (e.g. pc member) based on the ranked list of items (e.g. papers).
+    </li>
+  </ul>
+</li>
+<li><code><em>full</em></code>.  Optional. Whether to include the <code>term</code> data in the returned representation of the item.
+Values can be either <code>1</code> for true or <code>0</code> for false. The default is <code>0</code>.
+<ul>
+<li>Example: <code>[% site.url %]/kdd09/matches/pc/items/Peter%20Flach.xml</code></li>
+</ul>
+</li>
+</ul>
+
+<h3>Usage Examples:</h3>
+<blockquote>
+<h4>cURL (<a href="curl">about cURL</a>):</h4>
+<code>curl -d "full=1" -d "threshold3=0.25" -d "threshold2=0.05" -d "threshold1=0.025" <span class="cr"></span><br/>
+[% site.url %]/kdd09/matches/pc/items/Ada%20Fu.xml</code><br/>
+</blockquote>
+
+<h3>Response (<a href="return-values">about return values</a>):</h3>
+<blockquote>
+<h4>XML example:</h4>
+<pre>[% FILTER html -%]
+<result>
+  <match>
+    <name>Ada Fu</name>
+    <created>1268566203</created>
+    <description>Ada Fu</description>
+    <document_n>2418</document_n>
+    <item>
+      <name>paper 702</name>
+      <bid>3</bid>
+      <score>0.0268317206661247</score>
+    </item>
+    <item>
+      <name>paper 11</name>
+      <bid>3</bid>
+      <score>0.0252243523574359</score>
+    </item>
+    <item>
+      <name>paper 387</name>
+      <bid>2</bid>
+      <score>0.0243183759127017</score>
+    </item>
+    .
+    .
+    .
+    <item>
+      <name>paper 422</name>
+      <bid>0</bid>
+      <score>0</score>
+    </item>
+    <modified>1268566203</modified>
+    <profiles_id>pc</profiles_id>
+    <source>http://dblp.uni-trier.de/db/indices/a-tree/f/Fu:Ada_Wai=Chee.html</source>
+    <term>
+      <name>ada</name>
+      <idf>6.39543676462294</idf>
+      <n>117</n>
+      <tf>0.0472536348949919</tf>
+      <tfidf>0.302207633869501</tfidf>
+      <wg>1</wg>
+      <wl>1</wl>
+      <wtfidf>0.302207633869501</tfidf>
+    </term>
+    <term>
+      <name>wai</name>
+      <idf>5.53294028837287</idf>
+      <n>126</n>
+      <tf>0.0508885298869144</tf>
+      <tfidf>0.281563197227376</tfidf>
+      <wg>1</wg>
+      <wl>1</wl>
+      <wtfidf>0.281563197227376</tfidf>
+    </term>
+    <term>
+      <name>chee</name>
+      <idf>5.68494338181792</idf>
+      <n>117</n>
+      <tf>0.0472536348949919</tf>
+      <tfidf>0.268634238963125</tfidf>
+      <wg>1</wg>
+      <wl>1</wl>
+      <wtfidf>0.268634238963125</tfidf>
+    </term>
+    .
+    .
+    .
+    <term>
+      <name>approach</name>
+      <idf>1.16836785607702</idf>
+      <n>1</n>
+      <tf>0.000403877221324717</tf>
+      <tfidf>0.000471877163197503</tfidf>
+      <wg>1</wg>
+      <wl>1</wl>
+      <wtfidf>0.000471877163197503</tfidf>
+    </term>
+  </match>
+</result>
+[% END %]</pre>
+</blockquote>
+
+

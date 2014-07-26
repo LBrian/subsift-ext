@@ -1,0 +1,53 @@
+[% page.title = 'API Method: reports folder update'
+   page.tab = 'api'
+%]
+
+<h2>PUT /:user_id/reports/:folder_id</h2>
+
+<p>
+Updates a reports folder in the specified user account.
+Returns a representation of the updated reports folder with a 200 OK HTTP status code.
+</p>
+
+<h3>URL:</h3>
+<code>[% site.url %]/<em>user_id</em>/reports/<em>folder_id</em>.<em>format</em></code>
+
+<h3>Formats (<a href="formats">about return formats</a>):</h3>
+<code>[% INCLUDE 'api/_formats.phtml' %]</code>
+
+<h3>HTTP Methods (<a href="http-methods">about HTTP methods</a>):</h3>
+<code>PUT</code>
+<p>Clients that can not issue <code>PUT</code> requests can use <code>POST</code> with the added parameter <code>_method=PUT</code></p>
+
+<h3>Requires Authentication (<a href="authentication">about authentication</a>):</h3>
+<code>true</code>
+
+<h3>Parameters:</h3>
+<ul>
+<li><code>folder_id</code>.  Required. The ID of the reports folder to update.
+<ul>
+<li>Example: <code>[% site.url %]/kdd09/reports/pc.xml</code></li>
+</ul>
+</li>
+<li><code><em>description</em></code>.  Optional.  The description of the folder to update.</li>
+<li><code><em>mode</em></code>.  Optional. Whether the reports folder is publicly accessible or whether authentication is required to access. 
+Values can be <code>public</code> or <code>private</code>. Folders are public by default if no mode is specified.</li>
+</ul>
+
+<h3>Usage Examples:</h3>
+<blockquote>
+<h4>cURL (<a href="curl">about cURL</a>):</h4>
+<code>curl -X PUT -H "Token:mytoken" -d "description=KDD 2009 PC" [% site.url %]/kdd09/reports/pc.xml</code><br/>
+</blockquote>
+
+<h3>Response (<a href="return-values">about return values</a>):</h3>
+<blockquote>
+<h4>XML example:</h4>
+<pre>[% FILTER html -%]
+<?xml version="1.0" encoding="UTF-8"?>
+<result>
+</result>
+[% END %]</pre>
+</blockquote>
+
+

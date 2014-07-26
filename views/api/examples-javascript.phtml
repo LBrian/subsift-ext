@@ -1,0 +1,81 @@
+[% page.title = 'SubSift REST API: Examples - JavaScript' 
+   page.tab = 'api'
+%]
+
+<h2>JavaScript and JSON</h2>
+<p>
+JavaScript is available in all the main web browsers and is the ideal language to work with SubSift's <code>json</code> output <a href="[% site.url %]/api/formats">format</a>. The examples on this page use <code>json</code> but there is no reason why any of the output formats that SubSift supports cannot also be used from JavaScript. After <code>json</code> the next most popular format for JavaScript is <code>xml</code>, but this can be substantially slower to process than <code>json</code> and usually requires an XML parser library. For an example of how to retrieve all SubSift's supported data formats, see the source of the <a href="[% site.url %]/demo/explorer">SubSift REST API Explorer</a> web page elsewhere on this site. On the other hand, if you want to work with the easiest format for JavaScript, i.e. <code>json</code>, then simply read the examples below.
+</p>
+
+<h2>Making HTTP Requests from JavaScript</h2>
+<p>
+To use the SubSift REST API from a JavaScript program, the JavaScipt language must be able to make HTTP Request calls. Web browsers have a standard built-in object, called <a href="http://en.wikipedia.org/wiki/XMLHttpRequest" class="external">XMLHttpRequest</a>, that allows JavaScript to make HTTP Requests to a url and for the HTTP Response to be passed back to JavaScript. Using the XMLHttpRequest object directly requires a lot of work, which is why most developers use an existing JavaScript library, such as <a href="http://jquery.com/" class="external">jQuery</a>, to do all the hard work for them.
+We highly recommend jQuery for working with the SubSift REST API and use it in the examples below.
+</p>
+
+<h2>Calling SubSift from JavaScript</h2>
+<p>
+To use jQuery you must include a link to the following script file (or a local copy of it) in your web page as follows.
+</p>
+<blockquote>
+<pre>[% FILTER html -%]
+<html>
+  <head>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    .
+    .
+    .
+  </head>
+  <body>
+    .
+    .
+    .
+  </body>
+</html>
+[% END %]</pre>
+</blockquote>
+
+<p>
+  Further details of jQuery are available on the <a href="http://jquery.com/" class="external">jQuery website</a>.
+  To use the examples on this page though, the above is all that is required.
+</p>
+
+<h3>Example 1: GET /:user_id/bookmarks</h3>
+<p>
+This example gets a list of bookmark folders using the SubSift API using the <code>jQuery.getJSON</code> method
+and displays a string (<code>s</code>) with the ids of all the bookmark folders, one per line.
+Note that <code>$</code> is used as an abbreviation for the <code>jQuery</code> JavaScript object.
+Hence <code>$.getJSON</code> is equivalent to <code>jQuery.getJSON</code>. The function <code>getJSON</code>
+takes two arguments: the first is the url and the second is a function to process the data returned.
+In this example, an anonymous function is passed in (i.e. <code>function(data) {...}</code>) 
+although an existing function name could have been specified instead. The latter case would be useful
+where multiple calls all needed to use the same function; it would avoid duplicate copies of this
+anonymous function for each method call.
+</p>
+<blockquote>
+<pre>[% FILTER html -%]
+$.getJSON(
+    "[% site.url %]/kdd09/bookmarks?format=json&callback=?", 
+    function(data) {
+        var s = "";
+        $.each(data.bookmarks, 
+            function(i, bookmark) {
+                 s = s + bookmark.id + " - " + bookmark.description + "\n";
+            }
+        );
+        alert(s);
+    }
+);
+[% END %]</pre>
+</blockquote>
+<p>
+The url has two important parameters which must be used in all SubSift API calls from JavaScript
+where <code>json</code> is required. The first is <code>format=json</code>, which specified that
+the response should be returned in JSON format. The second is <code>callback=?</code> which specifies
+that a JSONP callback function should be used (this allows safe cross-domain calls). The question mark
+character is a placeholder that jQuery replaces with a random function javascript name to be used by
+SubSift to wrap the JSON data in. It is not necessary to understand the details of JSONP because as a
+programmer you can just handle the native JavaScript data object returned to your function - as shown
+in the above example.
+</p>
+

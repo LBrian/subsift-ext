@@ -1,0 +1,66 @@
+[% page.title = 'API Method: bookmark items create'
+   page.tab = 'api'
+%]
+
+<h2>POST /:user_id/bookmarks/:folder_id/items/:item_id</h2>
+
+<p>
+Creates a bookmark item in the specified bookmarks folder of the specified user account.
+Returns a representation of the created bookmark item with a 201 Created HTTP status code.
+To create multiple bookmarks at once, see <a href="[% site.url %]/api/bookmark-items-create-multiple">bookmark items create (multiple)</a>.
+</p>
+
+<h3>URL:</h3>
+<code>[% site.url %]/<em>user_id</em>/bookmarks/<em>folder_id</em>/items/<em>item_id</em>.<em>format</em></code>
+
+<h3>Formats (<a href="formats">about return formats</a>):</h3>
+<code>[% INCLUDE 'api/_formats.phtml' %]</code>
+
+<h3>HTTP Methods (<a href="http-methods">about HTTP methods</a>):</h3>
+<code>POST</code>
+
+<h3>Requires Authentication (<a href="authentication">about authentication</a>):</h3>
+<code>true</code>
+
+<h3>Parameters:</h3>
+<ul>
+<li><code>folder_id</code>.  Required. The ID of the bookmarks folder to create the bookmark item in.</li>
+<li><code>item_id</code>.  Required. The ID of the bookmark item to create.</li>
+<li><code>item_url</code>.  Required. The url of the bookmark item.</li>
+<li><code><em>description</em></code>.  Optional. The description of the bookmark item.
+<ul>
+<li>Example: <code>[% site.url %]/kdd09/bookmarks/pc/items/Peter%20Flach.xml</code><br/>
+<code>item_url=http://www.cs.bris.ac.uk/~flach</code><br/>
+<code>description=Peter A. Flach's homepage</code><br/>
+</li>
+</ul>
+</li>
+</ul>
+
+<h3>Usage Examples:</h3>
+<blockquote>
+<h4>cURL (<a href="curl">about cURL</a>):</h4>
+<code>curl -X POST -H "Token:mytoken" -d "item_url=http://www.cs.bris.ac.uk/~flach"<span class="cr"></span><br/> [% site.url %]/kdd09/bookmarks/pc/items/Peter%20Flach.xml</code><br/>
+<br/>
+<code>curl -X POST -H "Token:mytoken" -d "item_id=Peter Flach" -d "description=Peter A. Flach's homepage"<span class="cr"></span><br/>
+-d "item_url=http://www.cs.bris.ac.uk/~flach" -d "format=xml"<span class="cr"></span><br/> [% site.url %]/kdd09/bookmarks/pc/items</code><br/>
+</blockquote>
+
+<h3>Response (<a href="return-values">about return values</a>):</h3>
+<blockquote>
+<h4>XML example:</h4>
+<pre>[% FILTER html -%]
+<?xml version="1.0" encoding="UTF-8"?>
+<result>
+  <bookmark>
+    <name>Peter Flach</name>
+    <created>1266788131</created>
+    <description>Peter A. Flach's homepage</description>
+    <modified>1266788131</modified>
+    <url>http://www.cs.bris.ac.uk/~flach</url>
+  </bookmark>
+</result>
+[% END %]</pre>
+</blockquote>
+
+

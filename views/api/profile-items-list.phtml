@@ -1,0 +1,86 @@
+[% page.title = 'API Method: profile items list' 
+   page.tab = 'api'
+%]
+
+<h2>GET /:user_id/profiles/:folder_id/items</h2>
+<p>Returns the list of profiles (items) from the specified profiles folder with a 200 OK HTTP status code.</p>
+
+<h3>URL:</h3>
+<code>[% site.url %]/<em>user_id</em>/profiles/<em>folder_id</em>/items.<em>format</em></code>
+
+<h3>Formats (<a href="formats">about return formats</a>):</h3>
+<code>[% INCLUDE 'api/_formats.phtml' %]</code>
+
+<h3>HTTP Methods (<a href="http-methods">about HTTP methods</a>):</h3>
+<code>GET</code>
+
+<h3>Requires Authentication (<a href="authentication">about authentication</a>):</h3>
+<code>true</code> &nbsp;if folder's <code>mode</code> property is set to <code>private</code><br/>
+<code>false</code> &nbsp;if folder's <code>mode</code> property is set to <code>public</code>
+
+<h3>Parameters:</h3>
+<ul>
+<li><code>folder_id</code>.  Required. The ID of the profiles folder to list the items of.</li>
+<li><code><em>sort</em></code>.  Optional. Number of the term data column to sort the returned <code>term</code> statistics on.
+Numeric data columns are sorted in descending order. Textual data columns are sorted in ascending alphabetical order.
+Values of <code>sort</code> must be one of:
+<ul>
+<li><code>0</code> for <code>name</code>, the term name (i.e. the text of the word or keyword).</li>
+<li><code>1</code> for <code>n</code>, the term occurrences (i.e. the number of times the term occurs in the document).</li>
+<li><code>2</code> for <code>tf</code>, the term frequency (i.e. the ratio of <code>n</code> to the total number of term occurrences in the document).</li>
+<li><code>3</code> for <code>idf</code>, the inverse document frequency (i.e. <em>log</em><sub>2</sub> of the ratio of the total number of documents to the number of documents in which the term occurs).</li>
+<li><code>4</code> for <code>tfidf</code>, the tf-idf score (i.e. the product of <code>tf</code> and <code>idf</code>).</li>
+<li><code>5</code> for <code>wg</code>, the global term weight (i.e. the weight for this term across all items in the folder).</li>
+<li><code>6</code> for <code>wl</code>, the local term weight (i.e. the weight for this term in this item).</li>
+<li><code>7</code> for <code>wtfidf</code>, the weighted tf-idf score (i.e. the product of <code>tfidf</code>, <code>wg</code> and <code>wl</code>).</li>
+</ul>
+The default when no value is supplied is <code>7</code>.
+</li>
+<li><code><em>full</em></code>.  Optional. Whether to include the <code>term</code> data in the returned representation of the item.
+Values can be either <code>1</code> for true or <code>0</code> for false. The default is <code>0</code>.
+<ul>
+<li>Example: <code>[% site.url %]/kdd09/profiles/pc/items.xml</code></li>
+</ul>
+</li>
+</ul>
+
+<h3>Usage Examples:</h3>
+<blockquote>
+<h4>cURL (<a href="curl">about cURL</a>):</h4>
+<code>curl [% site.url %]/kdd09/profiles/pc/items</code><br/>
+</blockquote>
+
+<h3>Response (<a href="return-values">about return values</a>):</h3>
+<blockquote>
+<h4>XML example:</h4>
+<pre>[% FILTER html -%]
+<?xml version="1.0" encoding="UTF-8"?>
+<result>
+  <item>
+    <name>Ad Feelders</name>
+    <created>1266788131</created>
+    <description>Ad Feelders</description>
+    <modified>1266788131</modified>
+    <source>http://dblp.uni-trier.de/search/author?author=Ad%20Feelders</source>
+  </item>
+  <item>
+    <name>Ada Fu</name>
+    <created>1266788131</created>
+    <description>Ada Fu</description>
+    <modified>1266788131</modified>
+    <source>http://dblp.uni-trier.de/db/indices/a-tree/f/Fu:Ada_Wai=Chee.html</source>
+  </item>
+  .
+  .
+  .
+  <item>
+    <name>Zoran Obradovic</name>
+    <created>1266788131</created>
+    <description>Zoran Obradovic</description>
+    <modified>1266788131</modified>
+    <source>http://dblp.uni-trier.de/search/author?author=Zoran%20Obradovic</source>
+  </item>
+</result>
+[% END %]</pre>
+</blockquote>
+

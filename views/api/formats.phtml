@@ -1,0 +1,236 @@
+[% page.title = 'SubSift REST API: Return Formats' 
+   page.tab = 'api'
+%]
+
+<h2>Supported Formats</h2>
+<p>The SubSift REST API can return data in the following representational formats:</p>
+<table>
+  <tr>
+    <td style="width:60px;">
+      <code>csv</code>
+    </td>
+    <td style="padding-bottom:10px;">
+      CSV (Comma-Separated Values) is a simple text format for a database table.
+      CSV is not ideal for hierachical data but is useful for flat structures like matrices.
+      See <a href="http://en.wikipedia.org/wiki/Comma-separated_values" class="external">http://en.wikipedia.org/wiki/Comma-separated_values</a>
+    </td>
+  </tr>
+  <tr>
+    <td style="width:60px;">
+      <code>json</code>
+    </td>
+    <td style="padding-bottom:10px;">
+      JSON (JavaScript Object Notation) is a lightweight data-interchange format that is a subset of the object literal notation of JavaScript.
+      See <a href="http://www.json.org" class="external">http://www.json.org</a>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>rdf</code>
+    </td>
+    <td style="padding-bottom:10px;">
+      RDF (Resource Description Framework) is graph-based format for describing and connecting URIs. RDF is defined by a family World Wide Web Consortium (W3C) specifications. 
+      See <a href="http://en.wikipedia.org/wiki/Resource_Description_Framework" class="external">http://en.wikipedia.org/wiki/Resource_Description_Framework</a>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>terms</code>
+    </td>
+    <td style="padding-bottom:10px;">
+      Terms are the data format of the Prolog logic programming language. 
+      SubSift produces ground terms suitable for consulting or asserting into a Prolog database. 
+      See <a href="http://en.wikipedia.org/wiki/Prolog" class="external">http://en.wikipedia.org/wiki/Prolog</a> 
+      and <a href="http://www.swi-prolog.org/" class="external">SWI-Prolog</a>.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>xml</code>
+    </td>
+    <td style="padding-bottom:10px;">
+      XML (Extensible Markup Language) is a set of rules for encoding documents electronically in a format defined by the World Wide Web Consortium (W3C). 
+      See <a href="http://www.w3.org/XML/" class="external">http://www.w3.org/XML</a>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>yaml</code>
+    </td>
+    <td style="padding-bottom:10px;">
+      YAML (YAML Ain't Markup Language) is a human friendly data serialization standard for a wide range of programming languages. 
+      See <a href="http://www.yaml.org" class="external">http://www.yaml.org</a>
+    </td>
+  </tr>
+</table>
+
+
+<h2>Default Format</h2>
+<p>If no specific format is specified then the returned representational format defaults to <code>xml</code>.</p>
+<p>For example, the following url returns a result in <code>xml</code> format.</p>
+<blockquote>
+<code>[% site.url %]/kdd09/bookmarks/pc</code>
+</blockquote>
+
+<p><em>NOTE: At the next release, SubSift's default format may be changing from XML to JSON. The dominant use cases are turning out to be browser-based client-side AJAX applications where JSON is a more sensible default than XML.</em></p>
+
+<h2>Specifying a Format</h2>
+
+<h3>Method 1: Specifying a format by file extension</h3>
+<p>
+All SubSift REST API methods accept an optional <code>:format</code> parameter which specifies the representational format of the result.
+The <code>:format</code> parameter is normally supplied as a suffix to the method url, in the familiar style of file extensions, after the dot.
+For example, the following urls returns results in <code>xml</code> and <code>json</code> format respectively.</p>
+<blockquote>
+<code>[% site.url %]/kdd09/bookmarks/pc.xml</code><br/>
+<code>[% site.url %]/kdd09/bookmarks/pc.json</code><br/>
+</blockquote>
+
+<p>
+The <code>:format</code> parameter may also be supplied as a separate http query parameter.
+This can be useful when selecting the format in a web form or setting it dynamically from a program.
+For example, the following url returns a result in <code>json</code> format.
+</p>
+<blockquote>
+<code>[% site.url %]/kdd09/bookmarks/pc?format=json</code><br/>
+</blockquote>
+
+<h3>Method 2: Specifying a format by content negotiation</h3>
+<p>
+As an alternative to specifying a format using file extensions, SubSift supports simple content negotiation. For example, although the following two HTTP GET requests share the same url, the first returns <code>json</code> and the second returns <code>rdf</code>.
+</p>
+<blockquote>
+<code>curl -H "Accept: application/json" [% site.url %]/kdd09/bookmarks/pc</code><br/>
+<code>curl -H "Accept: application/rdf" [% site.url %]/kdd09/bookmarks/pc</code><br/>
+</blockquote>
+<p>Content negotiation relies on the HTTP <code>Accept</code> header parameter having a mime type value from the following table. Only single exact matches of these mime types are supported; lists of acceptable mime types, although legal under HTTP, are not supported by SubSift.</p>
+
+<table>
+  <tr>
+    <th style="width:180px;">
+      Mime Type
+    </th>
+    <th style="width:60px;">
+      Format
+    </th>
+  </tr>
+  <tr>
+    <td>
+      <code>text/csv</code>
+    </td>
+    <td>
+      <code>csv</code>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>application/json</code>
+    </td>
+    <td>
+      <code>json</code>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>application/rdf</code>
+    </td>
+    <td>
+      <code>rdf</code>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>application/prolog</code>
+    </td>
+    <td>
+      <code>terms</code>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>application/xml</code>
+    </td>
+    <td>
+      <code>xml</code>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>application/yaml</code>
+    </td>
+    <td>
+      <code>yaml</code>
+    </td>
+  </tr>
+</table>
+
+<h2>Pretty Printing</h2>
+<p>
+All output formats have an optional parameter <code>pretty</code> which specifies whether <em>pretty printing</em>
+should be used to make the output more readable for humans - typically by splitting the output over multiple lines and using indentation.
+Values can be either <code>1</code> for true or <code>0</code> for false. The default is <code>1</code>.
+</p>
+<p>
+The following examples use <em>pretty printing</em>.
+</p>
+<blockquote>
+<code>[% site.url %]/kdd09/bookmarks/pc.xml</code><br/>
+<code>[% site.url %]/kdd09/bookmarks/pc.xml?pretty=1</code><br/>
+<code>[% site.url %]/kdd09/bookmarks/pc.json</code><br/>
+<code>[% site.url %]/kdd09/bookmarks/pc.json?pretty=1</code><br/>
+</blockquote>
+<p>
+The following examples do not use <em>pretty printing</em>.
+</p>
+<blockquote>
+<code>[% site.url %]/kdd09/bookmarks/pc.xml?pretty=0</code><br/>
+<code>[% site.url %]/kdd09/bookmarks/pc.json?pretty=0</code><br/>
+</blockquote>
+<p>
+In the SubSift REST API documentation, all examples are shown with <em>pretty printing</em> printing on.
+</p>
+<p>
+Note that if the specified format is YAML then the value of <code>pretty</code> is ignored.
+This is because YAML is, by design, human-readable and has strict semantics associated with its layout and indentation.
+</p>
+
+<!--
+
+<h2>Format Details</h2>
+
+<h3>json</h3>
+
+<blockquote>
+<h3>JSON example:</h3>
+<pre>[% FILTER html -%]
+[% END %]</pre>
+</blockquote>
+
+
+<h3>terms</h3>
+
+<blockquote>
+<h3>TERMS example:</h3>
+<pre>[% FILTER html -%]
+[% END %]</pre>
+</blockquote>
+
+
+<h3>xml</h3>
+
+<blockquote>
+<h3>XML example:</h3>
+<pre>[% FILTER html -%]
+[% END %]</pre>
+</blockquote>
+
+
+<h3>yaml</h3>
+
+<blockquote>
+<h3>YAML example:</h3>
+<pre>[% FILTER html -%]
+[% END %]</pre>
+</blockquote>
+
+-->

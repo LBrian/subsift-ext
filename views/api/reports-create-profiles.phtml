@@ -1,0 +1,68 @@
+[% page.title = 'API Method: reports create (profiles)'
+   page.tab = 'api'
+%]
+
+<h2>
+  POST /:user_id/reports/:folder_id/profiles/:profiles_id
+</h2>
+
+<p>
+Creates a reports folder in the specified user account and generates reports therein based on the specified profiles folder.
+Returns a representation of the created reports folder with a 201 Created HTTP status code.
+</p>
+
+<h3>URL:</h3>
+<code>[% site.url %]/<em>user_id</em>/reports/<em>folder_id</em>/profiles/<em>:profiles_id</em>.<em>format</em></code>
+
+<h3>Formats (<a href="formats">about return formats</a>):</h3>
+<code>[% INCLUDE 'api/_formats.phtml' %]</code>
+
+<h3>HTTP Methods (<a href="http-methods">about HTTP methods</a>):</h3>
+<code>POST</code>
+
+<h3>Requires Authentication (<a href="authentication">about authentication</a>):</h3>
+<code>true</code>
+
+<h3>Parameters:</h3>
+<ul>
+<li><code>folder_id</code>.  Required. The ID of the reports folder to create.</li>
+<li><code>profiles_id</code>.  Optional. The ID of the profiles folder to create a report from.
+Defaults to the same value as <code>folder_id</code>.
+<ul>
+<li>Example: <code>[% site.url %]/kdd09/reports/pc/profiles/pc</code><br/>
+<li>Or equivalently, <code>[% site.url %]/kdd09/reports/pc/profiles</code><br/>
+</ul>
+</li>
+<li><code><em>description</em></code>.  Optional. The description of the folder to create.</li>
+<li><code><em>mode</em></code>.  Optional. Whether the reports folder is publicly accessible or whether authentication is required to access. 
+Values can be <code>public</code> or <code>private</code>. Folders are public by default if no mode is specified.</li>
+<li><code><em>type</em></code>.  Optional. Report type. 
+Value can currently only be <code>html</code>.</li>
+</ul>
+
+<h3>Usage Examples:</h3>
+<blockquote>
+<h4>cURL (<a href="curl">about cURL</a>):</h4>
+<code>curl -X POST -H "Token:mytoken" -d "description=Profiles of KDD09 Area Chairs"<span class="cr"></span><br/>
+[% site.url %]/kdd09/reports/chairs_profiles/profiles/chairs.xml</code><br/>
+</blockquote>
+
+<h3>Response (<a href="return-values">about return values</a>):</h3>
+<blockquote>
+<h4>XML example:</h4>
+<pre>[% FILTER html -%]
+<?xml version="1.0" encoding="UTF-8"?>
+<result>
+  <folder>
+    <id>chairs_profiles</id>
+    <created>1293480606</created>
+    <description>Profiles of KDD09 Area Chairs</description>
+    <mode>public</mode>
+    <modified>1293480606</modified>
+    <profiles_id>chairs</profiles_id>
+  </folder>
+</result>
+[% END %]</pre>
+</blockquote>
+
+

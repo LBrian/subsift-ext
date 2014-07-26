@@ -1,0 +1,57 @@
+[% page.title = 'API Method: bookmarks list'
+   page.tab = 'api'
+%]
+
+<h2>GET /:user_id/bookmarks</h2>
+<p>Returns a list of bookmarks folders with a 200 OK HTTP status code.</p>
+
+<h3>URL:</h3>
+<code>[% site.url %]/<em>user_id</em>/bookmarks.<em>format</em></code>
+
+<h3>Formats (<a href="formats">about return formats</a>):</h3>
+<code>[% INCLUDE 'api/_formats.phtml' %]</code>
+
+<h3>HTTP Methods (<a href="http-methods">about HTTP methods</a>):</h3>
+<code>GET</code>
+
+<h3>Requires Authentication (<a href="authentication">about authentication</a>):</h3>
+<code>true</code> &nbsp;if folder's <code>mode</code> property is set to <code>private</code><br/>
+<code>false</code> &nbsp;if folder's <code>mode</code> property is set to <code>public</code>
+
+<h3>Usage Examples:</h3>
+<blockquote>
+<h4>cURL (<a href="curl">about cURL</a>):</h4>
+<code>curl [% site.url %]/kdd09/bookmarks.xml</code><br/>
+</blockquote>
+
+<h3>Response (<a href="return-values">about return values</a>):</h3>
+<blockquote>
+<h4>XML example:</h4>
+<pre>[% FILTER html -%]
+<?xml version="1.0" encoding="UTF-8"?>
+<result>
+  <folder>
+    <id>pc</id>
+    <created>1266177639</created>
+    <description>KDD 2009 Programme Committee</description>
+    <mode>public</mode>
+    <modified>1265023664</modified>
+  </folder>
+  <folder>
+    <id>senior-pc</id>
+    <created>1267404101</created>
+    <description>KDD 2009 Senior Programme Committee</description>
+    <mode>public</mode>
+    <modified>1267404231</modified>
+  </folder>
+  <folder>
+    <id>chairs</id>
+    <created>1265023200</created>
+    <description>KDD 2009 Area Chairs</description>
+    <mode>public</mode>
+    <modified>1267404220</modified>
+  </folder>
+</result>
+[% END %]</pre>
+</blockquote>
+

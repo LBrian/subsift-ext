@@ -1,0 +1,43 @@
+[% page.title = 'API Method: report download' 
+   page.tab = 'api'
+%]
+
+<h2>GET /:user_id/reports/:folder_id[/index].zip</h2>
+
+<p>Returns a zip file containing all the report files of the specified reports folder with a 200 OK HTTP status code.
+</p>
+
+<h3>URL:</h3>
+<code>
+  [% site.url %]/<em>user_id</em>/reports/<em>folder_id</em>.zip<br/>
+  [% site.url %]/<em>user_id</em>/reports/<em>folder_id</em>/index.zip
+</code>
+
+<h3>Formats (<a href="formats">about return formats</a>):</h3>
+<code>zip</code>
+
+<h3>HTTP Methods (<a href="http-methods">about HTTP methods</a>):</h3>
+<code>GET</code>
+
+<h3>Requires Authentication (<a href="authentication">about authentication</a>):</h3>
+<code>true</code> &nbsp;if folder's <code>mode</code> property is set to <code>private</code><br/>
+<code>false</code> &nbsp;if folder's <code>mode</code> property is set to <code>public</code>
+
+<h3>Parameters:</h3>
+<ul>
+<li><code>folder_id</code>.  Required. The ID of the reports folder to be retrieved.
+<ul>
+<li>Example: <code>[% site.url %]/kdd09/reports/report1.zip</code></li>
+</ul>
+</li>
+</ul>
+
+<h3>Usage Examples:</h3>
+<blockquote>
+<h4>cURL (<a href="curl">about cURL</a>):</h4>
+<code>curl [% site.url %]/kdd09/reports/chairs_profiles.zip</code><br/>
+</blockquote>
+
+<h3>Response (<a href="return-values">about return values</a>):</h3>
+<p>A zip file archive containing all the files in the reports folder.</p>
+

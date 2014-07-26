@@ -1,0 +1,60 @@
+[% page.title = 'API Method: documents list'
+   page.tab = 'api'
+%]
+
+<h2>GET /:user_id/documents</h2>
+<p>Returns a list of documents folders with a 200 OK HTTP status code.</p>
+
+<h3>URL:</h3>
+<code>[% site.url %]/<em>user_id</em>/documents.<em>format</em></code>
+
+<h3>Formats (<a href="formats">about return formats</a>):</h3>
+<code>[% INCLUDE 'api/_formats.phtml' %]</code>
+
+<h3>HTTP Methods (<a href="http-methods">about HTTP methods</a>):</h3>
+<code>GET</code>
+
+<h3>Requires Authentication (<a href="authentication">about authentication</a>):</h3>
+<code>true</code> &nbsp;if folder's <code>mode</code> property is set to <code>private</code><br/>
+<code>false</code> &nbsp;if folder's <code>mode</code> property is set to <code>public</code>
+
+<h3>Parameters:</h3>
+<ul>
+<li><code><em>items</em></code>.  Optional. Whether to include the <code>item</code> data in the returned representation of the document folders.
+Values can be either <code>1</code> for true or <code>0</code> for false. The default is <code>0</code>.
+</li>
+</ul>
+
+<h3>Usage Examples:</h3>
+<blockquote>
+<h4>cURL (<a href="curl">about cURL</a>):</h4>
+<code>curl [% site.url %]/kdd09/documents.xml</code><br/>
+</blockquote>
+
+<h3>Response (<a href="return-values">about return values</a>):</h3>
+<blockquote>
+<h4>XML example:</h4>
+<pre>[% FILTER html -%]
+<?xml version="1.0" encoding="UTF-8"?>
+<result>
+  <folder>
+    <id>chairs</id>
+    <created>1273842414</created>
+    <description>KDD09 Area Chairs</description>
+    <mode>public</mode>
+    <modified>1273842875</modified>
+  </folder>
+  <folder>
+    <id>pc</id>
+    <created>1273563163</created>
+    <description>KDD09 Programme Committee</description>
+    <mode>public</mode>
+    <modified>1273563802</modified>
+  </folder>
+  .
+  .
+  .
+</result>
+[% END %]</pre>
+</blockquote>
+

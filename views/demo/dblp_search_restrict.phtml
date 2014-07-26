@@ -1,0 +1,33 @@
+[% page.title = 'DBLP Author Finder (Step 3 of 3)' 
+   page.tab = 'demo'
+%]
+
+[% page.head = BLOCK %]
+<link rel="stylesheet" type="text/css" media="screen" href="[% site.media %]/style/demo.css" />
+
+<script type="text/javascript" src="[% site.media %]/js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="[% site.media %]/js/demo.js"></script>
+[% END %]
+
+<p>
+The following is a list of authors and a single uri for each.
+The single uri retrieves all the author's publication titles from the one or more DBLP author pages (as selected on the previous page)
+and concatenates them into a single plain-text web page.
+This aggregated author page in some sense represents the research interests and expertise of the author.
+The list is in a suitable format for creating SubSift REST API bookmarks, which in turn may be used to create documents for profiling and matching.
+</p>
+
+<form method="post" action=".">
+  <div class="formbody">
+    <label for="id-list" >Author Name, Author URL:</label><br/>
+    <textarea id="id-list" name="list" class="demoform" wrap="off" style="width: 870px;height: 400px;">
+[%- FOREACH item IN list %]
+  [%- item.name %], [% item.uri %]
+[% END -%]</textarea><br/>
+[%#
+    <input type="submit" name="submit" value="Submit" class="default" />
+%]
+  </div>
+</form>
+
+

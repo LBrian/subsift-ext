@@ -1,0 +1,133 @@
+[% page.title = 'SubSift REST API: HTTP Request Methods' 
+   page.tab = 'api'
+%]
+
+<h2>HTTP Request Methods</h2>
+<p>
+When you enter a url into a web browser the browser performs an HTTP <code>GET</code> request to the url.
+This usually returns a web page in the form of an HTTP response which the browser displays. 
+However, <code>GET</code> is only one of several HTTP request methods; the five that are most significant for REST web services are: 
+<code>GET, HEAD, POST, PUT, DELETE</code>.
+Of these, the most familiar to HTML authors are <code>GET</code> and <code>POST</code> - as used in 
+hyperlinks (e.g. <code>&lt;a href="http://www.example.com"&gt;...&lt;/a&gt;</code>) and 
+web forms (e.g. <code>&lt;form method="POST"&gt;...&lt;/form&gt;</code>);
+the other three methods are less well known but have recently become more widely known due to the popularity of REST web services.
+An important convention of the REST protocol is that different HTTP request methods when applied to the same url will produce different actions.
+For example,
+</p>
+<blockquote>
+<code>GET [% site.url %]/kdd09/bookmarks/pc</code>
+</blockquote>
+<p>
+ will retrieve a representation of the pc bookmarks folder belonging to user kdd09, whereas
+</p>
+<blockquote>
+<code>DELETE [% site.url %]/kdd09/bookmarks/pc</code>
+</blockquote>
+<p>
+will delete that same representation.
+</p>
+<p>
+Further details of HTTP request methods are described in a <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html">W3C document on RFC 2616</a>
+and in the less readable standards document <a href="http://www.rfc-editor.org/rfc/rfc2616.txt">RFC 2616, Fielding, et al (1995)</a>.
+A starting point for finding out more about REST is this <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">Wikipedia article</a>.
+</p>
+
+<h2>Supported HTTP Methods</h2>
+<p>The SubSift REST API uses the following HTTP request methods in the conventional way as follows:</p>
+<table>
+  <tr>
+    <td style="width:60px;">
+      <code>GET</code>
+    </td>
+    <td style="padding-bottom:10px;">
+      For "show" and "list" methods.
+      These methods do not change any data.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>HEAD</code>
+    </td>
+    <td style="padding-bottom:10px;">
+      For "exists" methods.
+      These methods check for the existence of a data item.
+      They return a status code in the response header but do not return any data in the response body.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>POST</code>
+    </td>
+    <td style="padding-bottom:10px;">
+      For "create" and compute methods.
+      These methods change data.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>PUT</code>
+    </td>
+    <td style="padding-bottom:10px;">
+      For "update" and recompute methods.
+      These methods change data.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>DELETE</code>
+    </td>
+    <td style="padding-bottom:10px;">
+      For "destroy" methods.
+      These methods change data.
+    </td>
+  </tr>
+</table>
+
+<h2>Faking HTTP Methods</h2>
+<p>
+Not all client software supports all of the required HTTP request methods for communicating with a REST API (for example, some browser plug-ins such as Flash, only support <code>GET</code> and <code>POST</code>).
+Without the <code>HEAD, PUT, DELETE</code> only a subset of the features of a REST API would be available to such clients. 
+For this reason it is common practice for a REST API to offer a way of overriding or faking the real HTTP method so that the API behaves 
+as if a completely different method were used - for instance, treating a <code>POST</code> as if it were a <code>DELETE</code> or some other method.
+One technique for achieving this behaviour is to support an HTTP override parameter. SubSift does exactly this using the <code>_method</code> parameter
+which is available across the entire API.
+</p>
+<p>
+When communicating with the SubSift REST API, clients that can not issue certain requests methods can use one of the universally available methods <code>GET</code> or <code>POST</code> with 
+the added parameter <code>_method</code> to fake the required method.
+</p>
+
+<table>
+  <tr>
+    <td style="width:60px;">
+      <code>HEAD</code>
+    </td>
+    <td style="padding-bottom:10px;">
+      If <code>HEAD</code> is not supported, use <code>GET</code> with parameter <code>_method=HEAD</code>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>PUT</code>
+    </td>
+    <td style="padding-bottom:10px;">
+      If <code>PUT</code> is not supported, use <code>POST</code> with parameter <code>_method=PUT</code>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>DELETE</code>
+    </td>
+    <td style="padding-bottom:10px;">
+      If <code>DELETE</code> is not supported, use <code>POST</code> with parameter <code>_method=DELETE</code>
+    </td>
+  </tr>
+</table>
+
+<p>For example, in the SubSift REST API, the following <code>GET</code> behaves as is if an HTTP <code>HEAD</code> method had been used.</p>
+<blockquote>
+<code>GET [% site.url %]/kdd09/bookmarks/pc?_method=HEAD</code>
+</blockquote>
+
+<p>Note that the <code>_method</code> value is case insensitive and so <code>_method=HEAD</code> behaves the same as <code>_method=head</code></p>

@@ -1,0 +1,32 @@
+<a name="m1"></a>
+<h1>ECML-PKDD 2012 Personalised Paper Recommender</h1>
+
+<p style="text-align: right;">
+  [<a href="#m2">Down to the list of papers</a>]
+</p>
+
+<ul>
+[% FOREACH match IN match_items %]
+  [% IF match.profiles_id == matches.profiles_id1 %]
+    <li><a href="[% match.filename %]">[% IF match.description != "" %][% match.description %][% ELSE %][% match.id %][% END %]</a></li>
+  [% END %]
+[% END %]
+</ul>
+
+[% IF matches.profiles_id1 != matches.profiles_id2 %]
+
+<a name="m2"></a>
+<p style="text-align: right;">
+  [<a href="#m1">Up to the list of people</a>]
+</p>
+
+  <ul>
+  [% FOREACH match IN match_items %]
+    [% IF match.profiles_id == matches.profiles_id2 %]
+      <li><a href="[% match.filename %]">[% IF match.description != "" %][% match.description %][% ELSE %][% match.id %][% END %]</a></li>
+    [% END %]
+  [% END %]
+  </ul>
+
+[% END %]
+

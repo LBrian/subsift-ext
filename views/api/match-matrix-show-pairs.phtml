@@ -1,0 +1,80 @@
+[% page.title = 'API Method: match matrix show pairs' 
+   page.tab = 'api'
+%]
+
+<h2>GET /:user_id/matches/:folder_id/pairs</h2>
+
+<p>Returns a csv representation of the cosine similarity (and contribution of each term to the similarity score) for each pair of profile items, with a 200 OK HTTP status code.
+Content disposition is set as <em>attachment</em> 
+so that these urls will prompt a web browser to save to a file rather than display the retrieved content.</p>
+
+<p>
+Each line of the returned csv file has the following structure:
+</p>
+<pre>[% FILTER html -%]
+<item_id1>,<item_id2>,<similarity>,"<term> <contribution>,<term> <contribution>,...,<term> <contribution>"
+[% END %]</pre>
+<p>
+Where:
+</p>
+<ul>
+  <li><code>item_id1</code> is the id of an item from profiles folder 1.</li>
+  <li><code>item_id2</code> is the id of an item from profiles folder 2.</li>
+  <li><code>similarity</code> is the cosine similarity score.</li>
+  <li><code>term</code> is a term that had a non-zero contribution to the similarity score.</li>
+  <li><code>contribution</code> is the product of the term <em>tfidf</em> values from the respective profile items. 
+    The sum of these contributions for a given pair of profile items is the non-reflexive dot product used in the cosine similarity computation.</li>
+</ul>
+
+
+<h3>URL:</h3>
+<code>[% site.url %]/<em>user_id</em>/matches/<em>folder_id</em>/pairs.<em>format</em></code>
+
+<h3>Formats (<a href="formats">about return formats</a>):</h3>
+<!--<code>[% INCLUDE 'api/_formats.phtml' %]</code>-->
+All formats return plain csv text. i.e. the <code>format</code> is ignored (although this may change in the future).
+
+<h3>HTTP Methods (<a href="http-methods">about HTTP methods</a>):</h3>
+<code>GET</code>
+
+<h3>Requires Authentication (<a href="authentication">about authentication</a>):</h3>
+<code>true</code> &nbsp;if folder's <code>mode</code> property is set to <code>private</code><br/>
+<code>false</code> &nbsp;if folder's <code>mode</code> property is set to <code>public</code>
+
+<h3>Parameters:</h3>
+<ul>
+<li><code>folder_id</code>.  Required. The ID of the matches folder to retrieve from.</li>
+<li><code>profiles_id</code>.  Optional. The ID of the profiles folder from which the match item originated.
+This parameter specifies which profile folder's items to group the csv lines by.
+The default when no value is supplied is the ID of profiles folder 1.</li>
+</ul>
+
+<h3>Usage Examples:</h3>
+<blockquote>
+<h4>cURL (<a href="curl">about cURL</a>):</h4>
+<code>curl [% site.url %]/kdd09/matches/pc/pairs</code><br/>
+</blockquote>
+
+<h3>Response (<a href="return-values">about return values</a>):</h3>
+<blockquote>
+<h4>Example:</h4>
+<pre>[% FILTER html -%]
+Ad Feelders,paper 1,0.0109207248595044,"relations 1.13167441984441e-05,analysis 1.28341609060094e-05,...,experimental 1.45407492719853e-05"
+Ad Feelders,paper 2,0.0109207248595044,"relations 1.13167441984441e-05,knowledge 1.33899127927374e-05,...,classification 3.32139752326722e-06"
+Ad Feelders,paper 3,0.00220278749843272,"google 8.73225759614193e-09,related 1.92975612169781e-05,...,learning 1.92245838543954e-05"
+Ad Feelders,paper 4,0,""
+Ada Fu,paper 1,0.00344574134569426,"mining 5.35365324469984e-06,discovery 1.8932821239972e-06,...,rule 2.19094373121661e-06"
+Ada Fu,paper 2,0.00344574134569426,"mining 5.35365324469984e-06,rule 2.19094373121661e-06,...,relational 7.95288288760795e-06"
+Ada Fu,paper 3,0.00238871094093343,"mining 5.52271949976603e-07,systems 2.11119688402533e-07,...,user 2.0647037301976e-05"
+Ada Fu,paper 4,0,""
+.
+.
+.
+Zoran Obradovic,paper 1,0.00713778091229665,"discovery 1.31173529393273e-05,publications 1.20397184159368e-08,...,multi 1.10145819896604e-05"
+Zoran Obradovic,paper 2,0.00713778091229665,"mining 4.70097697981554e-06,systems 5.20203132918294e-07,...,classification 9.70723631441994e-07"
+Zoran Obradovic,paper 3,0.00237449925107599,"issue 4.71329981079197e-06,heterogeneous 5.81249916920558e-06,...,database 3.02249948617509e-06"
+Zoran Obradovic,paper 4,0.00234430063269854,"test 0.00267635875013962"
+[% END %]</pre>
+</blockquote>
+
+

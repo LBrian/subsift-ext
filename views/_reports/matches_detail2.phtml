@@ -1,0 +1,77 @@
+<h1>[% match.description %]</h1>
+
+<p style="text-align: right;">
+  [<a href="#profile">Down to the tf-idf profile</a>]
+</p>
+
+<p>
+The score is calculated as a weighted sum of: the cosine similarity between the "tf-idf" of the abstract terms and the terms of the pc member's publication titles (as listed on DBLP); whether the subject areas agree; and the number of keywords in common.
+</p>
+
+<table style="width: 100%;" cellpadding="5" cellspacing="0" border="0">
+  <tbody>
+  <tr>
+    <th style="text-align: left;padding-right: 10px;">&nbsp;</th>
+    <th style="text-align: left;width: 200px;padding-right: 10px;">Abstract Terms</th>
+    <th style="text-align: left;width: 100px;padding-right: 10px;">Subject Area</th>
+    <th style="text-align: left;width: 200px;padding-right: 10px;">Keywords</th>
+    <th style="text-align: right;width: 50px;">Score</th>
+  </tr>
+  [% FOREACH item IN match.item %]
+    [% IF item.id != match.id AND item.description != match.description %]
+      <tr>
+        <td style="vertical-align: top;">
+          <strong>[% IF item.description != "" %][% item.description %][% ELSE %][% item.id %][% END %]</strong>
+        </td>
+        <td style="vertical-align: top;">
+          [% FOREACH term IN item.term -%]
+            [%- IF term != item.term.first -%], [% END %][% term.name -%]
+            [%- LAST IF loop.count > 6 -%]
+          [%- END %]
+        </td>
+        <td style="vertical-align: top;">
+          [% FOREACH term IN item.term_s -%]
+            [%- IF term != item.term_s.first -%], [% END %][% term.name.replace('_', ' ') -%]
+          [%- END %]
+        </td>
+        <td style="vertical-align: top;">
+          [% FOREACH term IN item.term_k -%]
+            [%- IF term != item.term_k.first -%], [% END %][% term.name.replace('_', ' ') -%]
+          [%- END %]
+        </td>
+        <td style="text-align: right; vertical-align: top;">[% FILTER format('%.3lf') %][% item.score_all %][% END %]</td>
+      </tr>
+    [% END %]
+  [% END %]
+  </tbody>
+</table>
+
+<a name="profile"></a>
+<h3 style="padding-top:30px;">Profile: [% match.description %]</h3>
+
+<p>
+  The following is a list of terms ordered by "tf-idf" score. The higher the score, the more discriminating the term is with respect to the other profiles.
+  The list shows the term itself (i.e. keyword), the term count (#, i.e. how many times the term occurs within the profiled text), term frequency (tf, i.e. how frequent the term is within this text), inverse document frequency (idf, i.e. how infrequent the term is across all the texts profiled), and "tfidf" (i.e. the product of tf and idf which scores most highly terms which are most discriminating for this text with respect to the other texts). 
+</p>
+
+<table width="550px">
+  <tbody>
+  <tr>
+    <th style="text-align: left;">Term</th>
+    <th style="text-align: right;">#</th>
+    <th style="text-align: right;">tf</th>
+    <th style="text-align: right;">idf</th>
+    <th style="text-align: right;">tf*idf</th>
+  </tr>
+  [% FOREACH term IN match.term %]
+    <tr>
+      <td>[% term.name %]</td>
+      <td style="text-align: right;">[% term.n %]</td>
+      <td style="text-align: right;">[% FILTER format('%.3lf') %][% term.tf %][% END %]</td>
+      <td style="text-align: right;">[% FILTER format('%.3lf') %][% term.idf %][% END %]</td>
+      <td style="text-align: right;">[% FILTER format('%.3lf') %][% term.tfidf %][% END %]</td>
+    </tr>
+  [% END %]
+  </tbody>
+</table>
+

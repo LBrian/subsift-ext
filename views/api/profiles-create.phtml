@@ -1,0 +1,223 @@
+[% page.title = 'API Method: profiles create' 
+   page.tab = 'api'
+%]
+
+<h2>POST /:user_id/profiles/:folder_id/from/:document_id</h2>
+
+<p>
+Creates a profiles folder in the specified user account 
+and creates a profile item based on each document item (the text of which we sometimes refer to as 
+a "document") from the specified document folder.
+Returns a representation of the created profiles folder with a 201 Created HTTP status code.
+</p>
+<p>
+A profile item is formed by analysing the relative frequencies of terms in the document item's text 
+as compared to their frequency across the entire document. 
+SubSift calculates the <a href="http://en.wikipedia.org/wiki/Tf–idf" class="external">tf-idf</a> score for each term 
+in each document item (document) and also constructs a summary of term statistics for the entire document.
+</p>
+
+<h3>URL:</h3>
+<code>[% site.url %]/<em>user_id</em>/profiles/<em>folder_id</em>/from/<em>document_id</em>.<em>format</em></code><br/>
+or<br/>
+<code>[% site.url %]/<em>user_id</em>/profiles/<em>folder_id</em>.<em>format</em></code>
+
+<h3>Formats (<a href="formats">about return formats</a>):</h3>
+<code>[% INCLUDE 'api/_formats.phtml' %]</code>
+
+<h3>HTTP Methods (<a href="http-methods">about HTTP methods</a>):</h3>
+<code>POST</code>
+
+<h3>Requires Authentication (<a href="authentication">about authentication</a>):</h3>
+<code>true</code>
+
+<h3>Parameters:</h3>
+<ul>
+
+<li><code>folder_id</code>.  Required. The ID of the profiles folder to create.</li>
+<li><code>document_id</code>.  Optional. The ID of the documents folder to calculate the profiles of.
+Defaults to the same value as <code>folder_id</code>.</li>
+<li><code><em>description</em></code>.  Optional. The description of the folder to create.</li>
+<li><code><em>mode</em></code>.  Optional. Whether the profiles folder is publicly accessible or whether authentication is required to access. 
+Values can be <code>public</code> or <code>private</code>. Folders are public by default if no mode is specified.</li>
+
+<li><code><em>ignore_case</em></code>.  Optional. Whether to ignore differences between upper and lower case text during analysis.
+Values can be either <code>1</code> for true or <code>0</code> for false. The default is <code>1</code>.</li>
+<li><code><em>remove_html</em></code>.  Optional. Whether to remove HTML "tags" (or any xml elements) from the text before analysis.
+Values can be either <code>1</code> for true or <code>0</code> for false. The default is <code>1</code>.</li>
+<li><code><em>remove_stopwords</em></code>.  Optional. Whether to remove all terms (words or phrases) occurring in the list of <code>stopwords</code> before analysis.
+Values can be either <code>1</code> for true or <code>0</code> for false. The default is <code>1</code>.</li>
+<li><code><em>stopwords</em></code>.  Optional. A list of comma (or space or tab or new line) separated terms to be excluded from the text before analysis.
+Stopwords are only removed if <code>remove_stopwords</code> is <code>1</code>.
+The default value is: <span style="font-family: 'Courier New',Courier;font-size:12px;color:#666666;">
+a,about,above,across,after,afterwards,again,against,all,almost,alone,along,
+already,also,although,always,am,among,amongst,amount,an,and,another,
+any,anyhow,anyone,anything,anyway,anywhere,are,around,as,at,back,be,became,
+because,become,becomes,becoming,been,before,beforehand,behind,being,below,
+beside,besides,between,beyond,bill,both,bottom,but,by,call,can,cannot,cant,
+co,computer,con,could,couldnt,cry,de,describe,detail,do,done,down,due,during,
+each,eg,eight,either,eleven,else,elsewhere,empty,enough,etc,even,ever,every,
+everyone,everything,everywhere,except,few,fifteen,fifty,fill,find,fire,first,
+five,for,former,formerly,forty,found,four,from,front,full,further,get,give,
+go,had,has,hasnt,have,he,hence,her,here,hereafter,hereby,herein,hereupon,
+hers,herself,him,himself,his,how,however,hundred,i,ie,if,in,inc,indeed,
+interest,into,is,it,its,itself,keep,last,latter,latterly,least,less,ltd,made,
+many,may,me,meanwhile,might,mill,mine,more,moreover,most,mostly,move,much,
+must,my,myself,name,namely,neither,never,nevertheless,next,nine,no,nobody,
+none,noone,nor,not,nothing,now,nowhere,of,off,often,on,once,one,only,onto,or,
+other,others,otherwise,our,ours,ourselves,out,over,own,part,per,perhaps,
+please,put,rather,re,same,see,seem,seemed,seeming,seems,serious,several,she,
+should,show,side,since,sincere,six,sixty,so,some,somehow,someone,something,
+sometime,sometimes,somewhere,still,such,system,take,ten,than,that,the,their,
+them,themselves,then,thence,there,thereafter,thereby,therefore,therein,
+thereupon,these,they,thick,thin,third,this,those,though,three,through,
+throughout,thru,thus,to,together,too,top,toward,towards,twelve,twenty,two,un,
+under,until,up,upon,us,very,via,was,we,well,were,what,whatever,when,whence,
+whenever,where,whereafter,whereas,whereby,wherein,whereupon,wherever,whether,
+which,while,whilst,whither,who,whoever,whole,whom,whose,why,will,with,within,
+without,would,yet,you,your,yours,yourself,yourselves
+</span>
+</li>
+<li><code><em>stem</em></code>.  Optional. Whether to apply the Porter Stemming Algorithm to the text before analysis, stripping common English word suffixes to leave just the word stems (e.g. <em>connected, connecting, connection, connections</em> all shorten to the stem <em>connect</em>). 
+Values can be either <code>1</code> for true or <code>0</code> for false. The default is <code>0</code>.
+For details of the algorithm, see this reprint of the original paper, <a href="http://www.emeraldinsight.com/journals.htm?articleid=1563485&show=pdf" class="external">Porter, M.F., "An Algorithm For Suffix Stripping", Program 14 (3), July 1980, pp. 130-137</a>.</li>
+<li><code><em>ngrams</em></code>.  Optional. A comma-separated list of <em>n</em> specifying which <em>n</em>-grams to include as terms. 
+Values of <em>n</em> are integers between <code>1</code> and <code>5</code>. The default is <code>1,2</code> (i.e. single words and pairs of words).
+As examples: to include 1-grams, 2-grams and 4-grams, the value would be <code>1,2,4</code>; to include only single words (1-grams), the value would be <code>1</code>.</li>
+<li><code><em>restrict_vocabulary</em></code>.  Optional. Whether to remove all terms (words) not occurring in the list of terms in <code>vocabulary</code> before analysis.
+Values can be either <code>1</code> for true or <code>0</code> for false. The default is <code>0</code>.</li>
+<li><code><em>vocabulary</em></code>.  Optional. A list of comma (or space or tab or new line) separated terms that constitute a restricted vocabulary such that all other terms will be excluded from the text before analysis. The default value is none.
+The restricted vocabulary is only enforced if <code>restrict_vocabulary</code> is <code>1</code>.
+</li>
+<li><code><em>limit</em></code>.  Optional. The maximum number of terms retained and stored after the analysis.
+The calculations are performed using all the terms but only the <code>limit</code> highest <em>tf-idf</em> scoring terms are retained.
+Values can be between <code>1</code> and <code>100000</code>. The default is <code>1000</code>.</li>
+<li><code><em>length</em></code>.  Optional. The minimum number of characters in a term (word).
+Values can be between <code>1</code> and <code>100</code>. The default is <code>2</code>.</li>
+<li><code><em>term_weights</em></code>.  Optional. A list of term weights, where each row is a comma separated list of <code>term, weight</code> pairs. Each <code>term</code> is a word or n-gram (i.e. multiple words) and each <code>weight</code> is a decimal number between <code>0</code> and <code>1</code>. The default term weight for all terms is usually <code>1.0</code>, but this can be changed by specifying a different value for the <em>term_weight_default</em> parameter.
+Scores for each terms are multiplied by their term weights. Specifying term weights allows the importance of terms to be scaled down. A term weight of zero is equivalent to adding the term to the stopwords list. A term weight of one is equivalent to not specifying any weight.
+<ul>
+  <li>
+Example 1:<br/><span style="font-family: 'Courier New',Courier;font-size:12px;color:#666666;">
+intelligence,0.5<br/>
+intelligent,0.5<br/>
+artificial intelligence,0.75<br/>
+"intelligence, artificial",0.75<br/>
+intel,0.1<br/>
+</span>
+ </li>
+ <li>
+Example 2 (equivalent to Example 1):<br/><span style="font-family: 'Courier New',Courier;font-size:12px;color:#666666;">
+intelligence,0.5, intelligent,0.5, artificial intelligence,0.75, "intelligence, artificial",0.75, intel,0.1
+</span>
+ </li>
+</ul>
+The above term weights are applied globally to all document items of the documents folder being profiled.
+An extended format for lines in the list of term weights applies terms weights to a specific document item rather than globally to the whole documents folder. The extension simply requires the line to start with a document item ID, as shown in the examples below. 
+<ul>
+  <li>
+Example 3 (document item specific term weights):<br/><span style="font-family: 'Courier New',Courier;font-size:12px;color:#666666;">
+Peter_Flach,intelligence,0.6<br/>
+Peter_Flach,intelligent,0.6<br/>
+Peter_Flach,artificial intelligence,0.85, "intelligence, artificial",0.85<br/>
+Simon_Price,intelligence,0.2,intelligent,0.2<br/>
+Simon_Price,machine learning,0.9,learning,0.7,machine,0.7<br/>
+</span>
+ </li>
+ <li>
+Example 4 (global and specific term weights):<br/><span style="font-family: 'Courier New',Courier;font-size:12px;color:#666666;">
+intelligence,0.5, intelligent,0.5, intel,0.1<br/>
+Peter_Flach,intelligence,0.6, intelligent,0.6<br/>
+Simon_Price,learning,0.7,machine,0.7<br/>
+</span>
+ </li>
+</ul>
+Example 4 illustrates that both global and specific weights may be specified for the same term. The term score will be multiplied by both weights.
+Document item specific term weights share the same default weight value used by the global term weights, as defined in the <em>term_weight_default</em> parameter.
+</li>
+<li><code><em>term_weight_default</em></code>.  Optional. The default weight to be used for all terms not specified in <code>term_weights</code> parameter. 
+Values can be decimal numbers between <code>0</code> and <code>1</code>. The default is <code>1.0</code></li>
+<li><code><em>threshold</em></code>.  Optional. A <em>tf-idf</em> score below which any terms will be discarded. 
+Values can be decimal numbers between <code>0</code> and <code>1</code>. The default is <code>0</code> (i.e. no terms are discarded).</li>
+
+<li><code>sort</code>.  Optional. Number of the term data column to sort the returned <code>term</code> statistics on.
+Numeric data columns are sorted in descending order. Textual data columns are sorted in ascending alphabetical order.
+Values of <code>sort</code> must be one of:
+<ul>
+<li><code>0</code> for <code>name</code>, the term name (i.e. the text of the word or keyword)</li>
+<li><code>1</code> for <code>n</code>, the term occurrences (i.e. the total number of times a term occurs across all items in the document)</li>
+<li><code>2</code> for <code>dt</code>, the document term count (i.e. the total number items in the document in which the term occurs)</li>
+</ul>
+The default when no value is supplied is <code>2</code>.
+</li>
+
+<li><code><em>full</em></code>.  Optional. Whether to include the <code>term</code> data in the returned representation of the item.
+Values can be either <code>1</code> for true or <code>0</code> for false. The default is <code>0</code>.
+<ul>
+<li>Example: <code>[% site.url %]/kdd09/profiles/pc/from/pc.xml</code></li>
+</ul>
+</li>
+
+</ul>
+
+<h3>Usage Examples:</h3>
+<blockquote>
+<h4>cURL (<a href="curl">about cURL</a>):</h4>
+<code>curl -X POST -H "Token:mytoken" -d "description=KDD 2009 Programme Committee" -d "full=1"<span class="cr"></span><br/>
+[% site.url %]/kdd09/profiles/pc/from/pc.xml</code><br/>
+</blockquote>
+
+<h3>Response (<a href="return-values">about return values</a>):</h3>
+<blockquote>
+<h4>XML example:</h4>
+<pre>[% FILTER html -%]
+<?xml version="1.0" encoding="UTF-8"?>
+<result>
+  <folder>
+    <id>pc</id>
+    <document_id>pc</document_id>
+    <created>1266793611</created>
+    <description>KDD09 Programme Committee</description>
+    <ignore_case>1</ignore_case>
+    <limit>100000</limit>
+    <mode>private</mode>
+    <modified>1268566365</modified>
+    <ngrams>1,2</ngrams>
+    <remove_html>1</remove_html>
+    <remove_stopwords>1</remove_stopwords>
+    <stopwords>a,about,above,across, ... ,yourselves</stopwords>
+    <term>
+      <name>faq</name>
+      <dt>220</dt>
+      <n>432</n>
+    </term>
+    <term>
+      <name>author</name>
+      <dt>220</dt>
+      <n>238</n>
+    </term>
+    <term>
+      <name>home</name>
+      <dt>220</dt>
+      <n>225</n>
+    </term>
+    .
+    .
+    .
+    <term>
+      <name>timescale</name>
+      <dt>1</dt>
+      <n>1</n>
+    </term>
+    <term>
+      <name>schism</name>
+      <dt>1</dt>
+      <n>2</n>
+    </term>
+    <threshold>0</threshold>
+  </folder>
+</result>
+[% END %]</pre>
+</blockquote>
+
+

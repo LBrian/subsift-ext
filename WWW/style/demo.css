@@ -1,0 +1,108 @@
+/* demo.css */
+
+code, pre {
+    font-size: 12px;
+    color: #666666;
+}
+
+input.demoform {
+    font-family: 'Courier New';
+    font-size: 12px;
+    color: #000000;
+    border: 1px solid #aaa;
+    padding: 3px 2px;
+}
+
+input.name {
+    width: 150px;
+    vertical-align: top;
+}
+label.demoform {
+    vertical-align: top;
+}
+textarea.demoform {
+    font-family: 'Courier New';
+    font-size: 12px;
+    color: #000000;
+    border: 1px solid #aaa;
+    vertical-align: top;
+}
+textarea.value {
+    width: 495px;
+    height: 40px;
+    margin-bottom: 10px;
+}
+label.value_label {
+    padding-left: 10px;
+}
+#add_row_button {
+    margin: 10px 5px 0px 0;
+    padding: 2px 4px;
+    float: right;
+    border: 1px solid #aaa;
+    background: #eee;
+}
+#demoform input.radio {
+    margin: 0 0 0 4px;
+}
+#demoform label.radio {
+    padding: 0 10px 0 0px;
+}
+
+blockquote {
+    border-left: 5px solid #DDDDDD;
+    margin: 15px 30px 0 10px;
+    padding-left: 20px;
+}
+
+textarea {
+    overflow: auto;
+}
+form {
+    margin: 0;
+    padding: 0;
+    min-width: 560px;
+    max-width: 620px;
+    width: 590px;
+}
+
+#demoform fieldset {
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+div.methodurlwrap {
+    width: 810px;
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+div.methodwrap {
+    width: 85px;
+}
+label.method {
+    margin: 2px 0 2px 0;
+}
+select.method {
+    width: 85px;
+    height: 21px;
+    font:12px 'Lucida Grande',Verdana,Arial,Sans-Serif;
+    border: 1px solid #aaa;
+}
+div.urlwrap {
+    width: 715px;
+    margin-left: 95px;
+    margin-top: -38px;
+}
+label.url {
+    margin: 2px 0 2px 0;
+}
+input.url {
+    width: 700px;
+}
+div.tokenwrap {
+}
+input.token {
+    width: 550px;
+}
+
+

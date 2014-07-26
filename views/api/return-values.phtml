@@ -1,0 +1,63 @@
+[% page.title = 'API: Return Values' 
+   page.tab = 'api'
+%]
+
+[%#
+<h2>document_id</h2>
+<strong>Description:</strong> a permanent unique id referencing an object, such as user or status<br/>
+<strong>Examples:</strong> <br/>
+%]
+
+<h2>Character Encoding</h2>
+<p>SubSift return values are encoded as <code>UTF-8</code>.</p>
+
+[%#
+<h2>Mime Types</h2>
+<p>The mime types of returned data are as follows:</p>
+<table>
+  <tr>
+    <td style="width:60px;">
+      <code>json, js</code>
+    </td>
+    <td style="padding-bottom:10px;">
+      
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>terms</code>
+    </td>
+    <td style="padding-bottom:10px;">
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>xml</code>
+    </td>
+    <td style="padding-bottom:10px;">
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <code>yaml</code>
+    </td>
+    <td style="padding-bottom:10px;">
+    </td>
+  </tr>
+</table>
+%]
+
+<h2>JSON Callback Wrappers (JSONP)</h2>
+<p>For security reasons it is common practice to wrap JSON data returned from a server in a 
+  JavaScript function name supplied by the client. This technique is known as <a href="http://en.wikipedia.org/wiki/JSONP" class="external">JSONP</a>. The SubSift REST API supports this by
+  allowing any method call to include the <code>callback</code> request parameter with
+  any legal JavaScript function name as its value. The request parameter <code>jsoncallback</code> may be used as an equivalent alternative to <code>callback</code>.</p>
+<p>JSON is normally served by SubSift with the mime type of <code>applications/json</code> but for JSONP the mime type <code>application/javascript</code> is used, as is conventional under JSONP.</p>
+
+<h2>Suppressing HTTP Status Error Codes</h2>
+<p>Some Flash and JavaScript applications running in browsers intercept all non-200 HTTP status responses,
+  never returning the response value to the client program. This is incompatible with REST and AJAX in general.
+  To work around this problem, the SubSift REST API allows any method call to include the
+  <code>suppress_response_codes</code> request parameter with any non-null value. This forces SubSift to <em>always</em>
+  return the HTTP response status '200 OK'.</p>
+

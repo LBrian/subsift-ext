@@ -1,0 +1,79 @@
+[% page.title = 'API Method: documents folder destroy (all)'
+   page.tab = 'api'
+%]
+
+<h2>DELETE /:user_id/documents/:folder_id/items</h2>
+
+<p>
+Deletes all document items in the specified documents folder. 
+Returns a representation of the deleted document items with a 200 OK HTTP status code.
+To delete a single document item, see <a href="[% site.url %]/api/document-items-destroy">document items destroy</a>.
+</p>
+
+<h3>URL:</h3>
+<code>[% site.url %]/<em>user_id</em>/documents/<em>folder_id</em>/items.<em>format</em></code>
+
+<h3>Formats (<a href="formats">about return formats</a>):</h3>
+<code>[% INCLUDE 'api/_formats.phtml' %]</code>
+
+<h3>HTTP Methods (<a href="http-methods">about HTTP methods</a>):</h3>
+<code>DELETE</code>
+<p>Clients that can not issue <code>DELETE</code> requests can use <code>POST</code> with the added parameter <code>_method=DELETE</code></p>
+
+<h3>Requires Authentication (<a href="authentication">about authentication</a>):</h3>
+<code>true</code>
+
+<h3>Parameters:</h3>
+<ul>
+<li><code>folder_id</code>.  Required. The ID of the document folder containing the items to destroy.</li>
+<li><code><em>full</em></code>.  Optional. Whether to include the <code>text</code> data in the returned representation of the item.
+Values can be either <code>1</code> for true or <code>0</code> for false. The default is <code>0</code>.
+<ul>
+<li>Example: <code>[% site.url %]/kdd09/documents/pc/items</code>
+</ul>
+</li>
+</ul>
+
+<h3>Usage Examples:</h3>
+<blockquote>
+<h4>cURL (<a href="curl">about cURL</a>):</h4>
+<code>curl -X DELETE -H "Token:mytoken" [% site.url %]/kdd09/documents/pc/items</code><br/>
+</blockquote>
+
+<h3>Response (<a href="return-values">about return values</a>):</h3>
+<blockquote>
+<h4>XML example:</h4>
+<pre>[% FILTER html -%]
+<?xml version="1.0" encoding="UTF-8"?>
+<result>
+  <item>
+    <name>Ad Feelders</name>
+    <created>1266788131</created>
+    <description>Ad Feelders</description>
+    <id>Ad_Feelders</id>
+    <modified>1266788131</modified>
+    <source>http://dblp.uni-trier.de/search/author?author=Ad%20Feelders</source>
+  </item>
+  <item>
+    <name>Ada Fu</name>
+    <created>1266788131</created>
+    <description>Ada Fu</description>
+    <id>Ada_Fu</id>
+    <modified>1266788131</modified>
+    <source>http://dblp.uni-trier.de/db/indices/a-tree/f/Fu:Ada_Wai=Chee.html</source>
+  </item>
+  .
+  .
+  .
+  <item>
+    <name>Zoran Obradovic</name>
+    <created>1266788131</created>
+    <description>Zoran Obradovic</description>
+    <id>Zoran_Obradovic</id>
+    <modified>1266788131</modified>
+    <source>http://dblp.uni-trier.de/search/author?author=Zoran%20Obradovic</source>
+  </item>
+</result>
+[% END %]</pre>
+</blockquote>
+

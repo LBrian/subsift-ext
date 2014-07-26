@@ -1,0 +1,80 @@
+[% page.title = 'DBLP Author Finder (Step 2 of 3)' 
+   page.tab = 'demo'
+%]
+
+[% page.head = BLOCK %]
+<link rel="stylesheet" type="text/css" media="screen" href="[% site.media %]/style/demo.css" />
+
+<script type="text/javascript" src="[% site.media %]/js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="[% site.media %]/js/demo.js"></script>
+[% END %]
+
+<p>
+The following is a list of possible matches from the DBLP author pages.
+</p>
+
+<form action="dblp_search_restrict" method="post">
+
+<input type="hidden" name="results_list" value="[% FOREACH item IN list %]
+  name[%- item.id %], [% item.name %], [% item.description %], [% item.uri %]
+[% END %]"/>
+
+[% IF choices %]
+  <h2 class="api">Multiple Matches</h2>
+  <p>
+  The following are names for which multiple matches were found in the DBLP author pages.
+  You need to manually disambiguate the following multiple matches to leave only the relevant names selected.
+  Note that some authors have more than one DBLP page, for example with or without their middle initial, and so it can be valid to select more than one name.
+  </p>
+  [% FOREACH choice IN choices %]
+    <h3 class="api">[% choice.search_term %]</h3>
+    [% FOREACH option IN choice.options %]
+      <input type="checkbox" name="name[% option.id %]" id="id[% option.id %]"[% IF option.checked %] checked="checked"[% END %]/>
+      <label for="id[% option.id %]">[% option.name %]</label>
+      &nbsp;<a href="[% option.uri %]" class="external" target="_new">view</a>
+      <br/>
+    [% END %]
+  [% END %]
+[% END %]
+
+[% IF singles %]
+  <h2 class="api" style="margin-top: 30px;">Single Matches</h2>
+  <p>
+  The following are names for which a single match was found in the DBLP author pages.
+  </p>
+  [% FOREACH single IN singles %]
+    <input type="checkbox" name="name[% single.id %]" id="id[% single.id %]" checked="checked"/>
+    <label for="id[% single.id %]">[% single.name %]</label>
+    &nbsp;<a href="[% single.uri %]" class="external" target="_new">view</a>
+    <br/>
+  [% END %]
+[% END %]
+
+  <input type="submit" id="submit_btn" class="submit" value="Submit" style="margin-top: 30px;margin-bottom:50px;" />
+
+</form>
+
+[% IF missing %]
+  <h2 class="api">Non Matches</h2>
+  <p>
+  The following are names for which no match was found in the DBLP author pages.
+  You will need to go back and revise your list of names or manually add in these names and their urls later.
+  </p>
+  <p>
+  [% FOREACH line IN missing %]
+    [% line %]<br/>
+  [% END %]
+  </p>
+[% END %]
+
+<h2 class="api">All Matches</h2>
+<p>
+For information only, the following is a list of all the above single and multiple matches found in the DBLP author pages.
+</p>
+<pre>
+[% FOREACH item IN list %]
+  [%- item.name %], [% item.description %], [% item.uri %]
+[% END %]
+</pre>
+
+

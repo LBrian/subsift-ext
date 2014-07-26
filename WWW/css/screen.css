@@ -1,0 +1,130 @@
+* {margin: 0;padding:0;}
+body, div, span, p, a, img, ul, ol, li, table, th, tr, td, form, fieldset, legend, dl, dt, dd, blockquote, applet, object {border: 0;}
+ul, ol {list-style-type: none;}
+body {background: url('../img/bg-repeat.jpg') repeat-x;padding: 37px 0 0;font: normal 12px/18px 'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;line-height: 18px;color: rgb(51,51,51);}
+p {line-height: 18px;padding: 12px 0 12px 0;}
+
+/* LINKS ---------------------------------------------------------------------------------------------------------- */
+a {color: #e01477;text-decoration: none;}
+a:link {color: #e01477;}
+a:focus {color: #e01477;outline: 0;}
+a:visited {color: #e01477;}
+a:hover {color: #e01477;text-decoration: underline;}
+a.more, a.more-link {padding-right: 12px;background: url('../img/arrow.gif') no-repeat 100% 55%;}
+a.button {background: url('../img/button-start.gif') no-repeat;display: inline-block;text-decoration: none;color: #fff;font-weight: bold;}
+a.button span {display: inline-block;height: 33px;line-height: 33px;padding: 0 20px;color: #fff;font-weight: bold;background: url('../img/button-end.gif') no-repeat 100% 0;}
+a.external { background:url("../img/external-link-icon.png") no-repeat scroll right center transparent;padding: 0px 13px 0px 0px; }
+
+/* H1 - H5 -------------------------------------------------------------------------------------------------------- */
+h1, h2, h3, h4, h5, h6 {margin: 15px 0 15px 0;}
+h1 {font-size: 28px;line-height: 18px;font-weight: normal;margin: 5px 0 10px 0;color: #303537;}
+h2 {font-size: 18px;margin: 16px 0 6px;color: #303436;font-weight: normal;padding: 6px 0;}
+h2.api {font-size: 1.5em;margin-top: 36px;padding-top: 6px;margin-bottom: 0px;}
+h2.blog {padding: 24px 0 2px 0;}
+h3 {font-size: 13px;text-transform: uppercase;margin: 30px 0 10px 0;color: #303436;}
+h3.api {font-size: 13px;margin-top:14px;padding-top:6px;color: #404040;margin-bottom: 6px;}
+h4 {font-size: 1.0em;color: #005e7c;}
+h5 {font-size: 1.0em;}
+
+/* LISTS ---------------------------------------------------------------------------------------------------------- */
+ul {padding: 0 0 0 35px;}
+    ul li:before {content: "\00BB \0020";}
+    li {margin: 7px 0 8px 0;list-style-type: none;list-style-image: none;}
+    
+ul.tabs {padding: 0;}
+ul.tabs li:before {content: "";}
+
+/* TABLES --------------------------------------------------------------------------------------------------------- */
+td,th {padding-top: 0px;padding-right: 10px;text-align: left;vertical-align: top;}
+
+/* LAYOUT --------------------------------------------------------------------------------------------------------- */
+.wrap {width: 875px;margin: 0 auto;position: relative;}
+    /* HEADER ----------------------------------------------------------------------------------------------------- */
+    #header {background: url('../img/bg-header.jpg') no-repeat 0 50%;height: 36px;width: 100%;position: absolute;top: 0;left: 0;}
+        /* logo */
+        a#logo {font-size: 18px;color: #fff;padding: 0 0px;position: absolute;font-style: italic;top: 9px;text-decoration: none;line-height: 1em;}
+
+        /* navigation */
+        ul#nav {position: relative;top: 5px;float: right;padding: 0;}
+            ul#nav li {float: left;margin:0 0 0 2px;background:none;}
+                ul#nav li:before  {content: "";}
+                ul#nav li a {padding:1px 15px 0 15px;height: 24px;line-height: 21px;display: block;text-decoration: none;float: left;font-weight: normal;color: #fff;}
+                ul#nav li:hover {background: url('../img/nav-start.jpg') no-repeat;}
+                ul#nav li.active {color: #fff;background: url('../img/nav-start.jpg') no-repeat;}
+                ul#nav li:hover a {background: url('../img/nav-end.jpg') no-repeat 100% 0;}
+                ul#nav li.active a {background: url('../img/nav-end.jpg') no-repeat 100% 0;}
+
+    #intro {background: url('../img/bg-intro.jpg') repeat-x bottom;padding: 30px 0;width: 100%;margin-bottom: 20px;}
+    #intro .floatRight {width: 545px;}
+    #intro .photo {background: url('../img/macbook.jpg') no-repeat;width: 294px;height: 165px;float: left;}
+    #intro .photo img {position: absolute;top: 11px;left:46px;}
+    #intro .floatRight h1 {margin: 13px 0 20px;}
+    #intro p {font-size: 1.2em;padding-bottom: 20px;line-height: 1.7em;padding: 0 0 26px;}
+    
+    #banner {background: url('../img/bg-intro.jpg') repeat-x bottom;padding: 10px 0 0px;width: 100%;margin-bottom: 28px;height:64px;}
+    #banner h1 {font-size: 28px;line-height: 34px;margin: 0;font-weight: normal;}
+    #banner .breadcrumbs {padding: 0 0 8px;font-size:11px;line-height: 12px;color: #999;}
+    
+    /* COLS ----------------------------------------------------------------------------------------------------------- */
+    ul.cols {margin: 25px 0 35px;background: url('../img/cols-bg.gif') repeat-y 50% 0;padding: 0;}
+        ul.cols li:before  {margin: 0;content: "";}
+        ul.cols li {float: left;width: 244px;padding: 5px 0;margin: 0;}
+            ul.cols li.center {margin: 0 70px;text-align: left;}
+                ul.cols li h2 {margin: 3px 0 10px 0;text-transform: uppercase;font-size: 1.2em;font-weight: bold;color: #d11d6d;background: url('../img/arrow-down.gif') no-repeat 0 50%;background-position:0 3px;padding: 0 0 0 25px;}
+                ul.cols li h2 a {background: none;padding-right: 0;}
+                ul.cols li p {padding: 0 0 10px 0;line-height: 1.4em;}
+
+    .title {color: #8c959c;display: block;background: url('../img/dot.gif') repeat-x 0 50%;padding: 0 10px;margin:10px 0 25px;}
+    .title span {padding: 0 10px;background: #fff;}
+
+    /* PARTNERS ------------------------------------------------------------------------------------------------------- */
+    ul#partners  {width: 100%;height:60px;padding-top:20px;list-style-type:none;position:relative;}
+        ul#partners li:before {content: "";}
+        ul#partners li {vertical-align: middle;padding-left:75px;float:left;}
+    
+  	/* FOOTER ----------------------------------------------------------------------------------------------------- */
+    .footer {background: #e9e9e9 url('../img/bg-footer.jpg') no-repeat;height: 58px;line-height: 58px;padding: 0 20px;font-size: 0.9em;margin: 40px auto 20px;width: 890px;clear: both;overflow: hidden;}
+        .footer span {color: #87898a;display: block;}
+        .footer a {color: #87898a;}
+
+
+/* OTHER ----------------------------------------------------------------------------------------------------- */
+
+blockquote {border-left: 5px solid #DDDDDD;margin:12px 30px 12px 10px;padding: 12px 0 12px 20px;}
+code, pre {font-size: 12px;color:#666666;}
+hr {display: block;height:1px;margin:10px 0;padding: 0;border:0 solid #CCC;background:#CCC;color:#CCC;}
+
+.clear {clear: both;display: block;height:0;line-height:0;font-size:0;width: 100%;}
+.noscreen {display: none;}
+.floatLeft {float: left;}
+.floatRight {float: right;}
+img.floatLeft {margin-right: 20px;}
+img.floatRight {margin-left: 20px;}
+
+.bold {font-weight: bold;}
+.center {text-align: center;}
+.noborder {border: 0;}
+
+/* REST API Methods summary table */
+td.schema, td.params {font-family: 'Courier New',Courier;font-size: 12px;color: #666666;}
+td.method {width: 160px;padding-top: 3px;}
+td.method a {text-decoration: underline;}
+td.method a:hover {color: black;}
+td.http {width: 50px;font-size: 10px;color: #666666;padding-top: 3px;}
+td.schema {width: 400px;padding-top: 3px;}
+td.params {padding-top: 3px;}
+
+/* newline symbol */
+span.cr:before {font-size: 8px;padding-left: 2px;content: "\21b5";}
+
+/* blog post */
+div.post {padding-top: 40px;}
+/* blog more link
+a.more-link:after {content: " \0BB";}
+*/
+/* clearfix */
+.clearfix:after {content: ".";display: block;height: 0;clear: both;visibility: hidden;}
+.clearfix {display: inline-block;}
+/* hidden for ie mac \*/
+* html .clearfix {height: 1%;}
+.clearfix {display: block;}
