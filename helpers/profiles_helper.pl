@@ -702,35 +702,37 @@ sub helper_unpack_topics {
 
     # reconstruct values as arrays
     my @rank = ();
-    while (my ($term, $stats_arrayref) = each(%$terms)) {
-        my @stats = ($term, @$stats_arrayref);
-        push(@rank, \@stats);
-    }
+    my @inrank = ();
 
+    while (my ($topic, $words) = each(%$terms)) {
+    	while (my ($term, $stats_arrayref) = each(%$words)) {
+	        my @stats = ($term, @$stats_arrayref);
+	        push(@inrank, \@stats);
+    	}
+    	# topic number with fake data for aligning data format with stats
+    	# topic nuber, count(#), weights
+    	my $topic_data = [$topic, 0, 0];
+    	my @inranks = ($topic_data, @inrank);
+    	push(@rank, \@inranks);
+    	@inrank = ();
+    }
     if (scalar(@rank) > 0) {
-        # order by rightmost stat
-        my $ix = (defined $sort_ix) ? $sort_ix : scalar(@{$rank[0]}) - 1;
-        if ($ix == 0) {
-            @rank = sort { $a->[$ix] cmp $b->[$ix] } @rank;
-        }
-        else {
-            @rank = sort { $b->[$ix] <=> $a->[$ix] } @rank;
-        }
+    	@rank = sort { $a->[0][0] <=> $b->[0][0] } @rank;
     }
-
     # replace each array with a hash
     for(my $i=0; $i<scalar(@rank); $i++) {
-        my $r = $rank[$i];
-        $rank[$i] = {
-            'name'  => Encode::encode('UTF-8', $r->[0]),
-            'n'     => $r->[1],
-            'tf'    => $r->[2],
-            'idf'   => $r->[3],
-            'tfidf' => $r->[4],
-            'wg'     => $r->[5],
-            'wl'     => $r->[6],
-            'wtfidf' => $r->[7],
-        };
+    	my @words = @{$rank[$i]};
+    	@words = sort { $b->[2] <=> $a->[2] } @words;
+    	@{$rank[$i]} = @words;
+    	# subtract 1 for excluding topic number data
+    	for(my $j=0; $j<scalar@{$rank[$i]}-1; $j++) {
+	        my $r = $rank[$i][$j];
+	        $rank[$i][$j] = {
+	            'name'  => Encode::encode('UTF-8', $r->[0]),
+	            'n'     => $r->[1],
+	            'weight'    => $r->[2],
+	        };
+    	}
     }
 
     return \@rank;

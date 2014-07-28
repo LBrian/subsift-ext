@@ -39,55 +39,53 @@ sub helper_topic_reports_profiles {
             if (performed_render()) {
                 return;
             }
-
-            #$item_data->{'term'} = helper_unpack_topics($params, $terms);
-            #info_message("------" . Dumper($terms));
+            $item_data->{'term'} = helper_unpack_topics($params, $terms);
         }
-    die "test";
-#    my $template_cache_path = File::Spec->catdir($settings->{'CACHE_PATH'}, 'tcc');
-#    for my $profile (@$profile_array) {
-#        my $item_id = $profile->{'id'};
-#        my $filename = util_getValidFileName($item_id) . $HTML_FILE_EXTENSION;
-#        $profile->{'filename'} = $filename;
-#        $profile->{'url'} = $settings->{'SITE_URL'} . '/' . $user_id . '/' . $folder_type . '/' . $info->{'id'} . '/' . $filename;
-#    }
-#    for my $profile (@$profile_array) {
-#        my $filepath = File::Spec->catfile($folder_path, $profile->{'filename'});
-#        util_writeFile($filepath,
-#            render({
-#                'COMPILE_EXT' => '.ttc',
-#                'COMPILE_DIR' => $template_cache_path,
-#                'to_string' => $TRUE,
-#                'locals'    => {
-#                    'report'        => $info, 
-#                    'profiles'      => $profiles_info, 
-#                    'profile'       => $profile,
-#                },
-#                'template'  => '_reports/profiles_detail.phtml',
-#                'layout' => 'report',
-#            })
-#        );
-#    }
-#
-#    my $item_id = 'index';
-#    my $filename = util_getValidFileName($item_id) . $HTML_FILE_EXTENSION;
-#    my $filepath = File::Spec->catfile($folder_path, $filename);
-#    util_writeFile($filepath,
-#        render({
-#            'COMPILE_EXT' => '.ttc',
-#            'COMPILE_DIR' => $template_cache_path,
-#            'to_string' => $TRUE,
-#            'locals'    => {
-#                'report'        => $info, 
-#                'profiles'      => $profiles_info, 
-#                'profile_items' => $profile_array,
-#            },
-#            'template'  => '_reports/profiles_index.phtml',
-#            'layout' => 'report',
-#        })
-#    );
-#
-#    _create_zip($folder_path, $profiles_info->{'id'});
+        
+    my $template_cache_path = File::Spec->catdir($settings->{'CACHE_PATH'}, 'tcc');
+    for my $profile (@$profile_array) {
+        my $item_id = $profile->{'id'};
+        my $filename = util_getValidFileName($item_id) . $HTML_FILE_EXTENSION;
+        $profile->{'filename'} = $filename;
+        $profile->{'url'} = $settings->{'SITE_URL'} . '/' . $user_id . '/' . $folder_type . '/' . $info->{'id'} . '/' . $filename;
+    }
+    for my $profile (@$profile_array) {
+        my $filepath = File::Spec->catfile($folder_path, $profile->{'filename'});
+        util_writeFile($filepath,
+            render({
+                'COMPILE_EXT' => '.ttc',
+                'COMPILE_DIR' => $template_cache_path,
+                'to_string' => $TRUE,
+                'locals'    => {
+                    'report'        => $info, 
+                    'profiles'      => $profiles_info, 
+                    'profile'       => $profile,
+                },
+                'template'  => '_reports/profiles_topic_detail.phtml',
+                'layout' => 'report',
+            })
+        );
+    }
+
+    my $item_id = 'index';
+    my $filename = util_getValidFileName($item_id) . $HTML_FILE_EXTENSION;
+    my $filepath = File::Spec->catfile($folder_path, $filename);
+    util_writeFile($filepath,
+        render({
+            'COMPILE_EXT' => '.ttc',
+            'COMPILE_DIR' => $template_cache_path,
+            'to_string' => $TRUE,
+            'locals'    => {
+                'report'        => $info, 
+                'profiles'      => $profiles_info, 
+                'profile_items' => $profile_array,
+            },
+            'template'  => '_reports/profiles_index.phtml',
+            'layout' => 'report',
+        })
+    );
+
+    _create_zip($folder_path, $profiles_info->{'id'});
 }
 
 sub helper_reports_profiles {
