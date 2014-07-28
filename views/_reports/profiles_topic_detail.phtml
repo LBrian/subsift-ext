@@ -1,0 +1,29 @@
+<h3>Profile: [% profile.description %]</h3>
+
+<p>
+  The following is a list of topics ordered by score. The higher the score, the more discriminating the term is with respect to the other profiles.
+  The list shows the term itself (i.e. keyword), the term count (#, i.e. how many times the term occurs within the profiled text), term frequency (tf, i.e. how frequent the term is within this text), inverse document frequency (idf, i.e. how infrequent the term is across all the texts profiled), and "tfidf" (i.e. the product of tf and idf which scores most highly terms which are most discriminating for this text with respect to the other texts). 
+</p>
+[% FOREACH topic IN profile.term %]
+<p></p>
+	<table width="350px">
+	 	  <tr>
+		    <th style="text-align: left;">Topic terms</th>
+		    <th style="text-align: right;">#</th>
+		    <th style="text-align: right;">weights</th>
+		  </tr>
+		  [% FOREACH term IN topic %]
+		    <tr>
+		      <td>[% term.name %]</td>
+		      <td style="text-align: right;">[% term.n %]</td>
+		      <td style="text-align: right;">[% FILTER format('%.3lf') %][% term.weight %][% END %]</td>
+		    </tr>
+		  [% END %]  
+	</table>
+[% END %] 
+
+<p>
+  <strong>Source:</strong><br/>
+  <a href="[% profile.source %]">[% profile.source %]</a>
+</p>
+
