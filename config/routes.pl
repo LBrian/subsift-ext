@@ -493,7 +493,8 @@ sub routes {
           }
         ],
         # MALLET topic modelling from documents -> profiles
-        [ ':user_id/profiles/:folder_id/tpfrom/:document_id.:format',
+        # Author: Brian Liu
+        [ ':user_id/tprofiles/:folder_id/from/:document_id.:format',
           {
             controller => 'profiles',
             actions => {
@@ -694,7 +695,39 @@ sub routes {
             },
           }
         ],
-
+        # MALLET topic modelling matching
+        # Author: Brian Liu
+		[ ':user_id/matches/:folder_id/tprofiles/:profiles_id1/:with/:profiles_id2.:format',
+          {
+            controller => 'matches',
+            actions => {
+                'post'   => 'create_topics         user_id folder_id profiles_id1 profiles_id2 format description mode limit threshold sort full',
+                'put'    => 'update_topics         user_id folder_id profiles_id1 profiles_id2 format description mode limit threshold sort full',
+                'any'    => 'wrong_method   format',
+            },
+            requirements => {
+                user_id => $ACCEPTED_IDS,
+                folder_id => $ACCEPTED_IDS,
+                profiles_id1 => $ACCEPTED_IDS,
+                format => $ACCEPTED_FORMATS,
+            },
+            defaults => { with => 'with', profiles_id2 => '', format => $DEFAULT_FORMAT, },
+            models => {
+                'user_id' => { type=>'STR', required=>$TRUE, minlength=>1, maxlength=>64 },
+                'folder_id' => { type=>'STR', required=>$TRUE, minlength=>1, maxlength=>64 },
+                'profiles_id1' => { type=>'STR', required=>$TRUE, minlength=>1, maxlength=>64 },
+                'profiles_id2' => { type=>'STR', required=>$FALSE, default=>'', maxlength=>64 },
+                'format' => { type=>'STR', default=>$DEFAULT_FORMAT, values=>$ACCEPTED_FORMATS_STR },
+                'description' => { type=>'STR', required=>$FALSE, default=>'', maxlength=>1024 },
+                'mode' => { type=>'STR', required=>$FALSE, default=>'public', values=>'public|private' },
+                'limit' => { type=>'INT2', required=>$FALSE, default=>1000, minvalue=>1, maxvalue=>100000 },
+                'threshold' => { type=>'NUM', required=>$FALSE, default=>0, minvalue=>0 },
+                'sort' => { type=>'INT2', required=>$FALSE, default=>2, minvalue=>0, maxvalue=>2 },
+                'full' => { type=>'BOOL', required=>$FALSE, default=>$FALSE },
+                'with' => { type=>'STR', required=>$FALSE, default=>'with', values=>'with' },
+            },
+          }
+        ],
         [ ':user_id/matches/:folder_id/profiles/:profiles_id1/:with/:profiles_id2.:format',
           {
             controller => 'matches',
@@ -1074,7 +1107,8 @@ sub routes {
             },
           }
         ],
-
+		# Add a new parament, topic, to identify report style (tf-idf/topics)
+		# Author: Brian Liu
         [ ':user_id/reports/:folder_id/profiles/:profiles_id.:format',
           {
             controller => 'reports',
@@ -1096,6 +1130,7 @@ sub routes {
                 'description' => { type=>'STR', required=>$FALSE, default=>'', maxlength=>1024 },
                 'type' => { type=>'STR', required=>$FALSE, default=>'html', values=>'html|graphviz' },
                 'profiles_id' => { type=>'STR', required=>$FALSE, default=>'', maxlength=>64 },
+                # default TF-IDF report, True => Topics report
                 'topic' => { type=>'BOOL', required=>$FALSE, default=>$FALSE },
             },
           }

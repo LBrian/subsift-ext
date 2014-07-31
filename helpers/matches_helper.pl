@@ -19,6 +19,97 @@ my $TERM_FILE_EXTENSION = '.js';
 sub similarity_matrix_filename { return 'sim.csv'; }
 sub similarity_pairs_filename { return 'pair.csv'; }
 
+sub helper_match_topic_profiles {
+	#
+    # Calculate a similarity score between the paired topics of a pair of profiles.
+    # Stores the results in a simple (fast) custom serialisation of a hash.
+    #
+    my ($matches_name, $settings, $params, 
+        $matches_info, $matches_data, 
+        $profiles1_info, $profiles_data1, $profiles2_info, $profiles_data2
+    ) = @_;
+
+
+    my $timestamp           = $matches_info->{'modified'};
+
+    # computational parameters
+    my $limit               = $matches_info->{'limit'};
+    my $threshold           = $matches_info->{'threshold'};
+
+    # for speed, we directly access the storage layer (without using helper_[load|save]_file)
+    my $matches_id = $params->{'folder_id'};
+    my $matches_path = helper_folders_path($matches_name, $settings, $params, $matches_id);
+    if (performed_render()) {
+        return;
+    }
+    
+    
+    my $profiles_id1 = $matches_info->{'profiles_id1'};
+    my $profiles_path1 = helper_folders_path($PROFILES_TYPE, $settings, $params, $profiles_id1);
+    if (performed_render()) {
+        return;
+    }    
+    my $profiles_id2 = $matches_info->{'profiles_id2'};
+    my $profiles_path2 = helper_folders_path($PROFILES_TYPE, $settings, $params, $profiles_id2);
+    if (performed_render()) {
+        return;
+    }
+    
+    for my $key (keys %$matches_data) {
+        delete $matches_data->{$key};
+    }
+
+    # get canonically ordered arrays of profile data
+    my $profiles_array1 = array_from_hash($profiles_data1);
+    my $profiles_array2 = array_from_hash($profiles_data2);
+    
+    my $matches_uri_stem = $matches_info->{'uri'} . '/items/';
+    
+    # load topics for every item in profiles1 folder
+    my $log_2 = log(2.0);
+    for my $profile_data (@$profiles_array1) {
+        my $item_id = $profile_data->{'id'};
+        my $terms = helper_load_topics_for($PROFILES_TYPE, $settings, $params, $profiles_id1, $item_id);
+        # deserialise stats from string "n,tf,idf,tfidf,wg,wl,wtfidf" to 7-tuple (array)
+        # and recompute idf and tfidf relative to combined corpus (n and tf do not change)
+#        my %terms_n_tf_idf_tfidf_wg_wl_wtfidf = ();
+#        my $norm = 0;
+#        my $noofterms = 0;
+#        while (my ($term, $stats) = each(%$terms)) {
+#            $stats->[2] = log( $corpus_noofdocs / $corpus_dt->{$term} ) / $log_2;
+#            $stats->[3] = $stats->[1] * $stats->[2];
+#            $stats->[6] = $stats->[3] * $stats->[4] * $stats->[5];
+#            $norm += $stats->[6] * $stats->[6];
+#            $terms->{$term} = $stats;
+#            $terms_n_tf_idf_tfidf_wg_wl_wtfidf{$term} = $stats;
+#            $noofterms++;
+#        }
+#         # save the new document statistics [NOTE: for speed, do not use helper_save_file]
+#        my $composite_id = $profiles_id1 . '-' . $item_id;
+#        my $terms_file = File::Spec->catfile($matches_path, $composite_id . $TERM_FILE_EXTENSION);
+##        util_writeFile($terms_file, join("\n", %terms_n_tf_idf_tfidf_wg_wl_wtfidf), 'UTF-8');
+#        util_writeFile($terms_file, JSON->new->canonical->pretty->encode(\%terms_n_tf_idf_tfidf_wg_wl_wtfidf));
+#
+##        $matches_data->{$item_id} = {
+#        $matches_data->{$composite_id} = {
+#            'type'          => $MATCHES_TYPE,
+#            'profiles_id'   => $profiles_id1,
+#            'id'            => $composite_id,
+#            'description'   => $profile_data->{'description'},
+#            'document'      => $profile_data->{'document'},
+#            'document_n'    => $profile_data->{'document_n'},
+#            'source'        => $profile_data->{'source'},
+#            'created'       => $timestamp,
+#            'modified'      => $timestamp,
+#            'uri'           => $matches_uri_stem . $item_id,
+#        };
+#
+#        $profile_data->{'terms'} = $terms;
+#        $profile_data->{'norm'} = sqrt($norm);
+#        $profile_data->{'noofterms'} = $noofterms;
+    }
+    # load topics for every item in profiles2 folder
+}
 
 sub helper_match_profiles {
     #

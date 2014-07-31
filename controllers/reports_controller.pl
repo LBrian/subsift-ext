@@ -74,6 +74,7 @@ sub action_reports_create_profiles {
         # default to profiles folder ID being the same as the reports folder ID
         $params->{'profiles_id'} = $params->{'folder_id'};
     }
+    # Changes made by Brian Liu
 	if($params->{'topic'} == $TRUE) {
 		return action_topic_reports_create($settings, $params);
 	}else{
@@ -81,6 +82,7 @@ sub action_reports_create_profiles {
 	}
 }
 
+# Author: Brian Liu
 sub action_topic_reports_create {
     my ($settings, $params) = @_;
     
@@ -124,6 +126,7 @@ sub action_topic_reports_create {
         if (performed_render()) {
             return;
         }
+        # Author: Brian Liu
         helper_topic_reports_profiles($FOLDER_TYPE, $settings, $params,
             \%info,
             $profiles_info, $profiles_data
@@ -175,7 +178,7 @@ sub action_reports_create_matches {
         # default to matches folder ID being the same as the reports folder ID
         $params->{'matches_id'} = $params->{'folder_id'};
     }
-    
+    # Changes ma Brian Liu
     if($params->{'topic'}) {
 		return action_topic_reports_create($settings, $params);
 	}else{

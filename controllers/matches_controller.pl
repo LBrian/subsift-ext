@@ -15,7 +15,7 @@ my $PROFILES_TYPE = 'profiles';
 sub controller_matches {
     my ($settings, $params) = @_;
 
-    if (defined $params->{'folder_id'} && $params->{'action'} ne 'create') {
+    if (defined $params->{'folder_id'} && $params->{'action'} !~ /create/) {
         my $info = helper_folders_get_info($FOLDER_TYPE, $settings, $params);
         if (defined $info && $info->{'mode'} eq 'private') {
             # insist that request is authenticated
@@ -48,6 +48,108 @@ sub action_matches_list {
     render({ 'text' => $text });
 }
 
+sub action_matches_create_topics {
+    my ($settings, $params) = @_;
+    my $mode = $params->{'mode'};
+    my $description = $params->{'description'};
+    my $full = $params->{'full'};
+
+    # computational parameters
+
+    my $limit = $params->{'limit'};
+    my $threshold = $params->{'threshold'};
+
+    # default profiles folder ID values
+    if (!defined $params->{'profiles_id1'} || $params->{'profiles_id1'} eq '') {
+        $params->{'profiles_id1'} = $params->{'folder_id'};
+    }
+    if (!defined $params->{'profiles_id2'} || $params->{'profiles_id2'} eq '') {
+        $params->{'profiles_id2'} = $params->{'profiles_id1'};
+    }
+
+    # get the metadata of the profiles we are matching
+    # (also validates and gives us access to profile id param)
+    my (
+        $__profiles_info_file1, $profiles_info1, 
+        $__profiles_data_file1, $profiles_data1
+       ) = helper_load_folder_for($PROFILES_TYPE, $settings, $params, $params->{'profiles_id1'});
+    if (performed_render()) {
+        return;
+    }
+    my (
+        $__profiles_info_file2, $profiles_info2, 
+        $__profiles_data_file2, $profiles_data2
+       ) = helper_load_folder_for($PROFILES_TYPE, $settings, $params, $params->{'profiles_id2'});
+    if (performed_render()) {
+        return;
+    }
+
+    # create profile info hash which will be serialised to a file in the created folder
+    {
+        my %info = (
+              # generic "thing" parameters
+            'type'              => undef,
+            'id'                => undef,
+            'mode'              => $mode,
+            'description'       => $description,
+            'created'           => undef,
+            'modified'          => undef,
+            'uri'               => undef,
+              # ids of profiles to match against each other
+            'profiles_id1'       => $profiles_info1->{'id'},
+            'profiles_id2'       => $profiles_info2->{'id'},
+              # computational parameters
+            'limit'             => $limit,
+            'threshold'         => $threshold,
+        );
+        helper_folders_create($FOLDER_TYPE, $settings, $params, \%info);
+        if (performed_render()) {
+            return;
+        }
+    }
+    
+    # get the metadata and file details of the profile just created
+    my (
+        $matches_info_file, $matches_info, 
+        $matches_data_file, $matches_data
+       ) = helper_load_folder($FOLDER_TYPE, $settings, $params);
+    if (performed_render()) {
+        return;
+    }
+
+    # compute a match scores for each item pair from the profile1 and profile2
+    # Changes made by Brian Liu
+    helper_match_topic_profiles($FOLDER_TYPE, $settings, $params, 
+        $matches_info, $matches_data, 
+        $profiles_info1, $profiles_data1, $profiles_info2, $profiles_data2
+    );
+    if (performed_render()) {
+        return;
+    }
+
+    my $match_array = helper_save_things_data($matches_data_file, $matches_data);
+    if (performed_render()) {
+        return;
+    }
+    helper_folders_put_info_file($matches_info_file, $matches_info);
+    if (performed_render()) {
+        return;
+    }
+
+    if ($full) {
+        helper_matches_addin_full($FOLDER_TYPE, $settings, $params, $matches_info);
+        if (performed_render()) {
+            return;
+        }
+    }
+
+    my $text = serialise({'folder' => $matches_info});
+    render({
+        'status'    => '201 Created',
+        'headers'   => { 'Location' => $matches_info->{'uri'}, },
+        'text'      => $text,
+    });
+}
 
 sub action_matches_create {
     my ($settings, $params) = @_;

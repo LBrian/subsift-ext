@@ -73,6 +73,7 @@ sub action_profiles_create_topics{
 	#
 	# Create profile by using MALLET topic modelling
 	#
+	# Author: Brian Liu
 	
 	my ($settings, $params) = @_;
     my $mode = $params->{'mode'};
@@ -187,6 +188,7 @@ sub action_profiles_create_topics{
     }
 
     # compute a profile for each document from the document
+    # Author: Brian Liu
     helper_topics_from_documents_folder($FOLDER_TYPE, $settings, $params, 
         $profiles_info, $profiles_data, $document_info, $document_data
     );
@@ -218,6 +220,7 @@ sub action_profiles_create_topics{
     });
 }
 
+# Author: Brian Liu
 sub action_profiles_update_topics{
 	#
 	# Update profile by using MALLET topic modelling

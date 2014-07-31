@@ -18,6 +18,7 @@ my $MATCHES_TYPE   = 'matches';
 
 my $HTML_FILE_EXTENSION = '.html';
 
+# Author: Brian Liu
 sub helper_topic_reports_profiles {
     my ($folder_type, $settings, $params,
         $info,

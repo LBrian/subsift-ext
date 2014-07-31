@@ -142,9 +142,10 @@ sub helper_topics_from_documents_folder{
         util_writeFile($document_file, $text, 'UTF-8');
         
         my $mallet_file = File::Spec->catfile($profiles_path, $item_id . $MALLET_FILE_EXTENSION);
-        my $topics_file = File::Spec->catfile($profiles_path, $item_id . ".topics");
-        my $word_topic_conut = File::Spec->catfile($profiles_path, $item_id . "_word_topic_count");
-        my $word_topic_weights = File::Spec->catfile($profiles_path, $item_id . "_word_topic_weights");
+#        my $topics_file = File::Spec->catfile($profiles_path, $item_id . ".topics");
+#        my $word_topic_conut = File::Spec->catfile($profiles_path, $item_id . "_word_topic_count");
+#        my $word_topic_weights = File::Spec->catfile($profiles_path, $item_id . "_word_topic_weights");
+		my $xml_report = File::Spec->catfile($profiles_path, $item_id . ".xml");
         my $topics_model = File::Spec->catfile($profiles_path, $item_id . ".model");
 
 		my $import_data_options = "--keep-sequence";
@@ -156,9 +157,10 @@ sub helper_topics_from_documents_folder{
 	    
 	    # Train topics from MALLET data format
 	    my $train_tp_options = 	"--num-topics ${num_topics} ".
-	    					"--output-topic-keys ${topics_file} ".
-	    					"--word-topic-counts-file ${word_topic_conut} ".
-	    					"--topic-word-weights-file ${word_topic_weights}";
+	   						"--xml-topic-phrase-report ${xml_report}";
+#	    					"--output-topic-keys ${topics_file} ".
+#	    					"--word-topic-counts-file ${word_topic_conut} ".
+#	    					"--topic-word-weights-file ${word_topic_weights}";
 	    if($output_model) {
 	    	$train_tp_options = $train_tp_options . " --output-model ${topics_model}";
 	    }elsif(-f $topics_model) {
@@ -641,6 +643,7 @@ sub helper_profiles_addin_full {
     return;
 }
 
+# Author: Brian Liu
 sub helper_load_topics_for {
     my ($folder_type, $settings, $params, $folder_id, $item_id) = @_;
 
@@ -648,42 +651,21 @@ sub helper_load_topics_for {
     if (performed_render()) {
         return;
     }
-
+    # For parsing MALLET output XML report
+	use XML::LibXML;
 	my $terms_file = File::Spec->catfile($folder_path, $item_id . $TERM_FILE_EXTENSION);
-    my $topics_file = File::Spec->catfile($folder_path, $item_id . ".topics");
-    my $wtw = File::Spec->catfile($folder_path, $item_id . "_word_topic_weights");
-    my $wtc = File::Spec->catfile($folder_path, $item_id . "_word_topic_count");
+	my $xml_report = File::Spec->catfile($folder_path, $item_id . ".xml");
     my %terms = ();
-    my $terms_json = "{";
     if (!-f $terms_file) {
-    	# transform .topics, weigths and counts into terms JSON format
-    	my $wtc = util_readFile($wtc);
-    	my $wtw = util_readFile($wtw);
-    	my $topics = util_readFile($topics_file);
-    	my @topics = split(/\n/, $topics);
-    	# read topics from file
-    	foreach my $topic (@topics) {
-    		my @tp_terms = split(/\t/,$topic);
+    	my $parser = XML::LibXML->new();
+    	my $dom = $parser->parse_file($xml_report);
+    	my $root = $dom->getDocumentElement;
+    	foreach my $tp ( $root->findnodes('topic') ) {
     		my %words = ();
-    		foreach my $wd (split(/ /, $tp_terms[2])){
-    			$words{$wd} = [];
+    		foreach my $wd ( $tp->findnodes('word') ) {
+    			$words{$wd->textContent} = [$wd->findvalue('@count'), $wd->findvalue('@weight')];
     		}
-    		$terms{$tp_terms[0]} = \%words;
-    	}
-    	# read word's counts of each topic from files
-    	foreach my $count(split(/\n/, $wtc)){
-    		my @wtc_info = split(/ /, $count);
-    		for(my $i=2; $i<scalar(@wtc_info); $i++){
-    			my($topic_no, $word_cnt) = split(/:/, $wtc_info[$i]);
-    			$terms{$topic_no}{$wtc_info[1]}[0] = $word_cnt;
-    		}
-    	}
-    	# read word's weight of each topic from files
-    	foreach my $weigth(split(/\n/, $wtw)){
-    		my @wtw_info = split(/\t/, $weigth);
-    		if(defined $terms{$wtw_info[0]}{$wtw_info[1]}) {
-    			$terms{$wtw_info[0]}{$wtw_info[1]}[1] = $wtw_info[2];
-    		}
+    		$terms{$tp->findvalue('@id')} = [$tp->findvalue('@alpha'), $tp->findvalue('@totalTokens'), \%words];
     	}
     	util_writeFile($terms_file, JSON->new->canonical->pretty->encode(\%terms), 'UTF-8');
         return \%terms;
@@ -691,7 +673,7 @@ sub helper_load_topics_for {
     my $terms_hashref = JSON->new->decode( util_readFile($terms_file) );
     return $terms_hashref;
 }
-
+# Author: Brian Liu
 sub helper_unpack_topics {
     #
     # unpack topic modelling data from MALLET tool
@@ -703,11 +685,15 @@ sub helper_unpack_topics {
     # reconstruct values as arrays
     my @rank = ();
     my @inrank = ();
-
-    while (my ($topic, $words) = each(%$terms)) {
+	use Data::Dumper;
+    while (my ($topic, $infos) = each(%$terms)) {
+    	my @infos_ary = @$infos;
+    	my $alpha = $infos_ary[0];
+    	my $tokens = $infos_ary[1];
+    	my $words = $infos_ary[2];
     	while (my ($term, $stats_arrayref) = each(%$words)) {
-	        my @stats = ($term, @$stats_arrayref);
-	        push(@inrank, \@stats);
+			my @stats = ($term, @$stats_arrayref);
+		    push(@inrank, \@stats);
     	}
     	# topic number with fake data for aligning data format with stats
     	# topic nuber, count(#), weights
