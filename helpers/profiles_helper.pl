@@ -662,8 +662,19 @@ sub helper_load_topics_for {
     	my $root = $dom->getDocumentElement;
     	foreach my $tp ( $root->findnodes('topic') ) {
     		my %words = ();
+    		my $w_sum =0;
     		foreach my $wd ( $tp->findnodes('word') ) {
-    			$words{$wd->textContent} = [$wd->findvalue('@count'), $wd->findvalue('@weight')];
+    			$w_sum += $wd->findvalue('@count');
+    		}
+    		my $ntf_sum =0;
+    		foreach my $wd ( $tp->findnodes('word') ) {
+    			$ntf_sum += log($wd->findvalue('@count')+1)/log($w_sum);
+    		}
+    		my $ntf=0;
+    		foreach my $wd ( $tp->findnodes('word') ) {
+    			#normalise terms frequency
+    			$ntf = log($wd->findvalue('@count')+1)/log($w_sum);
+    			$words{$wd->textContent} = [$wd->findvalue('@count'), $wd->findvalue('@weight'), $ntf/$ntf_sum];
     		}
     		$terms{$tp->findvalue('@id')} = [$tp->findvalue('@alpha'), $tp->findvalue('@totalTokens'), \%words];
     	}
@@ -710,13 +721,13 @@ sub helper_unpack_topics {
     	my @words = @{$rank[$i]};
     	@words = sort { $b->[2] <=> $a->[2] } @words;
     	@{$rank[$i]} = @words;
-    	# subtract 1 for excluding topic number data
     	for(my $j=0; $j<scalar@{$rank[$i]}-1; $j++) {
 	        my $r = $rank[$i][$j];
 	        $rank[$i][$j] = {
 	            'name'  => Encode::encode('UTF-8', $r->[0]),
 	            'n'     => $r->[1],
 	            'weight'    => $r->[2],
+	            'p'    => $r->[3],
 	        };
     	}
     }

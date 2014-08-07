@@ -66,49 +66,126 @@ sub helper_match_topic_profiles {
     my $matches_uri_stem = $matches_info->{'uri'} . '/items/';
     
     # load topics for every item in profiles1 folder
-    my $log_2 = log(2.0);
+#    my $log_2 = log(2.0);
     for my $profile_data (@$profiles_array1) {
         my $item_id = $profile_data->{'id'};
+        my %topicsNmeans = ();
         my $terms = helper_load_topics_for($PROFILES_TYPE, $settings, $params, $profiles_id1, $item_id);
-        # deserialise stats from string "n,tf,idf,tfidf,wg,wl,wtfidf" to 7-tuple (array)
-        # and recompute idf and tfidf relative to combined corpus (n and tf do not change)
-#        my %terms_n_tf_idf_tfidf_wg_wl_wtfidf = ();
-#        my $norm = 0;
-#        my $noofterms = 0;
-#        while (my ($term, $stats) = each(%$terms)) {
-#            $stats->[2] = log( $corpus_noofdocs / $corpus_dt->{$term} ) / $log_2;
-#            $stats->[3] = $stats->[1] * $stats->[2];
-#            $stats->[6] = $stats->[3] * $stats->[4] * $stats->[5];
-#            $norm += $stats->[6] * $stats->[6];
-#            $terms->{$term} = $stats;
-#            $terms_n_tf_idf_tfidf_wg_wl_wtfidf{$term} = $stats;
-#            $noofterms++;
-#        }
-#         # save the new document statistics [NOTE: for speed, do not use helper_save_file]
-#        my $composite_id = $profiles_id1 . '-' . $item_id;
-#        my $terms_file = File::Spec->catfile($matches_path, $composite_id . $TERM_FILE_EXTENSION);
-##        util_writeFile($terms_file, join("\n", %terms_n_tf_idf_tfidf_wg_wl_wtfidf), 'UTF-8');
-#        util_writeFile($terms_file, JSON->new->canonical->pretty->encode(\%terms_n_tf_idf_tfidf_wg_wl_wtfidf));
-#
-##        $matches_data->{$item_id} = {
-#        $matches_data->{$composite_id} = {
-#            'type'          => $MATCHES_TYPE,
-#            'profiles_id'   => $profiles_id1,
-#            'id'            => $composite_id,
-#            'description'   => $profile_data->{'description'},
-#            'document'      => $profile_data->{'document'},
-#            'document_n'    => $profile_data->{'document_n'},
-#            'source'        => $profile_data->{'source'},
-#            'created'       => $timestamp,
-#            'modified'      => $timestamp,
-#            'uri'           => $matches_uri_stem . $item_id,
-#        };
-#
-#        $profile_data->{'terms'} = $terms;
-#        $profile_data->{'norm'} = sqrt($norm);
-#        $profile_data->{'noofterms'} = $noofterms;
+        while (my ($topic_id, $words) = each(%$terms)) {
+        	my $sum = 0;
+        	# $stats->[1] : weights
+            # $stats->[2] : P(t)
+        	while (my ($term, $stats) = each($words->[2])) {
+        		$sum = $sum + $stats->[2];
+        	}
+        	# Mean value P(t) of each topic, i.e weights
+        	$words->[3]= $sum / keys $words->[2];
+        	$topicsNmeans{$topic_id} = $words;
+        }
+        $profile_data->{'topics'} = \%topicsNmeans;
+        # save the new document statistics [NOTE: for speed, do not use helper_save_file]
+        my $composite_id = $profiles_id1 . '-' . $item_id;
+        my $terms_file = File::Spec->catfile($matches_path, $composite_id . $TERM_FILE_EXTENSION);
+        util_writeFile($terms_file, JSON->new->canonical->pretty->encode(\%topicsNmeans));
+        
     }
     # load topics for every item in profiles2 folder
+    for my $profile_data (@$profiles_array2) {
+        my $item_id = $profile_data->{'id'};
+        my %topicsNmeans = ();
+        my $terms = helper_load_topics_for($PROFILES_TYPE, $settings, $params, $profiles_id2, $item_id);
+        while (my ($topic_id, $words) = each(%$terms)) {
+        	my $sum = 0;
+        	# $stats->[1] : weights
+            # $stats->[2] : P(t)
+        	while (my ($term, $stats) = each($words->[2])) {
+        		$sum = $sum + $stats->[2];
+        	}
+        	# Mean value P(t) of each topic, i.e weights
+        	$words->[3]= $sum / keys $words->[2];
+        	$topicsNmeans{$topic_id} = $words;
+        }
+        $profile_data->{'topics'} = \%topicsNmeans;
+         # save the new document statistics [NOTE: for speed, do not use helper_save_file]
+        my $composite_id = $profiles_id2 . '-' . $item_id;
+        my $terms_file = File::Spec->catfile($matches_path, $composite_id . $TERM_FILE_EXTENSION);
+        util_writeFile($terms_file, JSON->new->canonical->pretty->encode(\%topicsNmeans));
+    }
+    
+    #
+    # Calculate pairwise topics Pearson product-moment correlation coefficient into Rxy matrix
+    #
+    my @rows = ();
+#    my %details = ();
+    for my $profile1_data (@$profiles_array1) {  
+             
+        my $item1_id = $profile1_data->{'id'};
+        my $terms1 = $profile1_data->{'topics'};
+        
+        my @row= ();      
+        for my $profile2_data (@$profiles_array2) {
+            
+            my $item2_id = $profile2_data->{'id'};
+            my $terms2 = $profile2_data->{'topics'};
+                      
+    		my $r = 0; 
+    		my $xy_sum = 0;
+    		my $x_pow_sum = 0;
+    		my $y_pow_sum = 0;
+    		my $x_mean = 0;
+    		my $y_mean = 0;
+    		my $cnt = 0;
+    		my @PCCs= ();
+		    while (my ($x_topic_id, $x_words) = each(%$terms1)) {
+#		    	$x_mean = $x_words->[3];
+                while (my ($y_topic_id, $y_words) = each(%$terms2)) {
+#                	$y_mean = $y_words->[3];
+					$x_mean =0 ;
+					$y_mean = 0;
+					$cnt = 0;
+                	$r = 0;
+                	$xy_sum = 0;
+                	$x_pow_sum = 0;
+                	$y_pow_sum = 0;
+                	my @x_weights=();
+                	my @y_weights=();
+                	# $stats->[1] : weights
+                	# $stats->[2] : P(t)
+                	while (my ($term, $stats) = each($x_words->[2])) {
+                		if(exists $y_words->[2]->{$term}) {
+           					$cnt++;
+           					$x_mean += $stats->[2];
+           					$y_mean += $y_words->[2]->{$term}->[2];
+		        			push(@x_weights, $stats->[2]);
+		        			push(@y_weights, $y_words->[2]->{$term}->[2]);
+                		}
+		        	}
+		        	if($cnt > 1) {
+			        	$x_mean = $x_mean/$cnt;
+			        	$y_mean = $y_mean/$cnt;
+		        		
+#		        	while (my ($term, $stats) = each($y_words->[2])) {
+#		        		push(@y_weights, $stats->[2]);
+#		        	}
+	                	for (my $x=0; $x<scalar(@x_weights); $x++) {
+	                		$xy_sum += ($x_weights[$x] - $x_mean) * ($y_weights[$x] - $y_mean);
+	                		$x_pow_sum += ($x_weights[$x] - $x_mean)**2;
+	                		$y_pow_sum += ($y_weights[$x] - $y_mean)**2;
+	                	}
+	                	if($x_pow_sum > 0 and $y_pow_sum > 0) {
+	                		$r = $xy_sum / sqrt($x_pow_sum) * sqrt($y_pow_sum);
+		        		}
+		        	}
+					$PCCs[$x_topic_id][$y_topic_id] = $r;
+                }
+		    }
+		    for (my $x=0; $x<scalar(@PCCs); $x++) {
+		    	for (my $y=0; $y<scalar@{$PCCs[$x]}; $y++) {
+		    		info_message("--" .$x."--".$y."---".$PCCs[$x][$y]);
+		    	}
+		    }
+        }
+    }
 }
 
 sub helper_match_profiles {
@@ -156,6 +233,7 @@ sub helper_match_profiles {
 
     # no. occurrences of term across all documents
     my $corpus_n = helper_load_terms_for($PROFILES_TYPE, $settings, $params, $profiles_id1, helper_document_n_file_id());
+   
     if (performed_render()) {
         return;
     }

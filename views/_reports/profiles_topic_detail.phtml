@@ -8,15 +8,17 @@
 <p></p>
 	<table width="350px">
 	 	  <tr>
-		    <th style="text-align: left;">Topic terms</th>
+		    <th style="text-align: left;">Topic Semantic Space</th>
 		    <th style="text-align: right;">#</th>
 		    <th style="text-align: right;">weights</th>
+		    <th style="text-align: right;">P(t)</th>
 		  </tr>
 		  [% FOREACH term IN topic %]
 		    <tr>
 		      <td>[% term.name %]</td>
 		      <td style="text-align: right;">[% term.n %]</td>
 		      <td style="text-align: right;">[% FILTER format('%.5lf') %][% term.weight %][% END %]</td>
+		      <td style="text-align: right;">[% FILTER format('%.5lf') %][% term.p %][% END %]</td>
 		    </tr>
 		  [% END %]  
 	</table>
