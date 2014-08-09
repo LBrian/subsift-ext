@@ -164,6 +164,39 @@ sub helper_reports_profiles {
     _create_zip($folder_path, $profiles_info->{'id'});
 }
 
+sub helper_topic_reports_matches_html {
+	my ($folder_type, $settings, $params,
+        $info,
+        $matches_info, $matches_data) = @_;
+
+    my $user_id = $params->{'user_id'};
+    my $format = $params->{'format'};
+    my $folder_id = $params->{'folder_id'};
+
+    my $folder_path = helper_folders_path($folder_type, $settings, $params, $folder_id);
+    if (performed_render()) {
+        return;
+    }
+
+    my $match_array = array_from_hash($matches_data);
+    
+     for my $item_data (@$match_array) {
+            my $terms = helper_load_topics_for($MATCHES_TYPE, $settings, $params, $matches_info->{'id'}, $item_data->{'id'});
+            if (performed_render()) {
+                return;
+            }
+            $item_data->{'term'} = helper_unpack_topics($params, $terms);
+      }
+
+    # load similarity matrix
+    my ($item_ids1, $item_ids2, $sims, $all) = helper_load_sim(
+        $MATCHES_TYPE, 'matches_id', $settings, $params, 
+        similarity_matrix_filename()
+    );
+    if (performed_render()) {
+        return;
+    }            
+}
 
 sub helper_reports_matches_html {
     my ($folder_type, $settings, $params,

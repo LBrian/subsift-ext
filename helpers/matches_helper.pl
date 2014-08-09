@@ -88,6 +88,19 @@ sub helper_match_topic_profiles {
         my $terms_file = File::Spec->catfile($matches_path, $composite_id . $TERM_FILE_EXTENSION);
         util_writeFile($terms_file, JSON->new->canonical->pretty->encode(\%topicsNmeans));
         
+         $matches_data->{$composite_id} = {
+            'type'          => $MATCHES_TYPE,
+            'profiles_id'   => $profiles_id1,
+            'id'            => $composite_id,
+            'description'   => $profile_data->{'description'},
+            'document'      => $profile_data->{'document'},
+            'document_n'    => $profile_data->{'document_n'},
+            'source'        => $profile_data->{'source'},
+            'created'       => $timestamp,
+            'modified'      => $timestamp,
+            'uri'           => $matches_uri_stem . $item_id,
+        };
+        
     }
     # load topics for every item in profiles2 folder
     for my $profile_data (@$profiles_array2) {
@@ -110,13 +123,26 @@ sub helper_match_topic_profiles {
         my $composite_id = $profiles_id2 . '-' . $item_id;
         my $terms_file = File::Spec->catfile($matches_path, $composite_id . $TERM_FILE_EXTENSION);
         util_writeFile($terms_file, JSON->new->canonical->pretty->encode(\%topicsNmeans));
+        
+         $matches_data->{$composite_id} = {
+            'type'          => $MATCHES_TYPE,
+            'profiles_id'   => $profiles_id1,
+            'id'            => $composite_id,
+            'description'   => $profile_data->{'description'},
+            'document'      => $profile_data->{'document'},
+            'document_n'    => $profile_data->{'document_n'},
+            'source'        => $profile_data->{'source'},
+            'created'       => $timestamp,
+            'modified'      => $timestamp,
+            'uri'           => $matches_uri_stem . $item_id,
+        };
     }
     
     #
     # Calculate pairwise topics Pearson product-moment correlation coefficient into Rxy matrix
     #
     my @rows = ();
-#    my %details = ();
+    my %details = ();
     for my $profile1_data (@$profiles_array1) {  
              
         my $item1_id = $profile1_data->{'id'};
@@ -136,6 +162,8 @@ sub helper_match_topic_profiles {
     		my $y_mean = 0;
     		my $cnt = 0;
     		my @PCCs= ();
+    		my $max_pcc = 0;
+    		my $pcc_sum = 0;
 		    while (my ($x_topic_id, $x_words) = each(%$terms1)) {
 #		    	$x_mean = $x_words->[3];
                 while (my ($y_topic_id, $y_words) = each(%$terms2)) {
@@ -147,6 +175,7 @@ sub helper_match_topic_profiles {
                 	$xy_sum = 0;
                 	$x_pow_sum = 0;
                 	$y_pow_sum = 0;
+                	$max_pcc = 0;
                 	my @x_weights=();
                 	my @y_weights=();
                 	# $stats->[1] : weights
@@ -163,7 +192,6 @@ sub helper_match_topic_profiles {
 		        	if($cnt > 1) {
 			        	$x_mean = $x_mean/$cnt;
 			        	$y_mean = $y_mean/$cnt;
-		        		
 #		        	while (my ($term, $stats) = each($y_words->[2])) {
 #		        		push(@y_weights, $stats->[2]);
 #		        	}
@@ -177,13 +205,48 @@ sub helper_match_topic_profiles {
 		        		}
 		        	}
 					$PCCs[$x_topic_id][$y_topic_id] = $r;
+					$max_pcc = ($r > $max_pcc) ? $r : $max_pcc;
                 }
+                $pcc_sum += $max_pcc;
 		    }
-		    for (my $x=0; $x<scalar(@PCCs); $x++) {
-		    	for (my $y=0; $y<scalar@{$PCCs[$x]}; $y++) {
-		    		info_message("--" .$x."--".$y."---".$PCCs[$x][$y]);
-		    	}
-		    }
+		    $details{$item1_id}{$item2_id} = [ $pcc_sum, \@PCCs ];
+		    push(@row, $pcc_sum);
+        }
+        push(@rows, \@row);
+    }
+    #
+    # serialise the similarity matrix to a csv file
+    #
+    my @row_headings = map {$_->{'id'}} @$profiles_array1;
+    my @column_headings = map {$_->{'id'}} @$profiles_array2;
+    my @lines = ( '"Similarity","' . join('","', @column_headings) . '"', );
+    foreach my $row_arrayref (@rows) {
+    	push(@lines, '"' . shift(@row_headings) . '",' . join(',', @$row_arrayref));
+    }
+    my $sim_file = File::Spec->catfile($matches_path, similarity_matrix_filename());
+    util_writeFile($sim_file, join("\n", @lines));  #no UTF-8 conversion needs (no wide characters in ids or numbers)
+    
+    #
+    # serialise the details of each pairwise comparison grouped by item
+    #
+    # first: the items of profile1
+    for my $profile1_data (@$profiles_array1) {        
+        my $item1_id = $profile1_data->{'id'};
+        my $composite_id = $profiles_id1 . '-' . $item1_id;
+        my $item_file = File::Spec->catfile($matches_path, 'TERMS-' . $composite_id . $TERM_FILE_EXTENSION);
+        util_writeFile($item_file, JSON->new->canonical->pretty->encode( $details{$item1_id} ));
+    }
+     if ($profiles_id1 ne $profiles_id2) {
+        for my $profile2_data (@$profiles_array2) {
+            my $item2_id = $profile2_data->{'id'};
+            my $composite_id = $profiles_id2 . '-' . $item2_id;
+            my %pivot_details = ();
+            for my $profile1_data (@$profiles_array1) {        
+                my $item1_id = $profile1_data->{'id'};
+                $pivot_details{$item1_id} = $details{$item1_id}{$item2_id};
+            }
+            my $item_file = File::Spec->catfile($matches_path, 'TERMS-' . $composite_id . $TERM_FILE_EXTENSION);
+            util_writeFile($item_file, JSON->new->canonical->pretty->encode( \%pivot_details ));
         }
     }
 }

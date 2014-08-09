@@ -145,17 +145,18 @@ sub action_topic_reports_create {
         }
 
         if ($type eq 'html') {
-            helper_reports_matches_html($FOLDER_TYPE, $settings, $params,
+            helper_topic_reports_matches_html($FOLDER_TYPE, $settings, $params,
                 \%info,
                 $matches_info, $matches_data
             );
         }
-        elsif ($type eq 'graphviz') {
-            helper_reports_matches_graphviz($FOLDER_TYPE, $settings, $params,
-                \%info,
-                $matches_info, $matches_data
-            );
-        }
+        # TODO
+#        elsif ($type eq 'graphviz') {
+#            helper_reports_matches_graphviz($FOLDER_TYPE, $settings, $params,
+#                \%info,
+#                $matches_info, $matches_data
+#            );
+#        }
         if (performed_render()) {
             return;
         }

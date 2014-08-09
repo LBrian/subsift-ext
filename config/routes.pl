@@ -1135,20 +1135,21 @@ sub routes {
             },
           }
         ],
-        
+        # Add a new parament, topic, to identify report style (tf-idf/topics)
+		# Author: Brian Liu
         [ ':user_id/reports/:folder_id/matches/:matches_id.:format',
           {
             controller => 'reports',
             actions => {
-                'post'   => 'create_matches     user_id folder_id format mode description type matches_id strength',
-                'put'    => 'update             user_id folder_id format mode description type matches_id',
+                'post'   => 'create_matches     topic user_id folder_id format mode description type matches_id strength',
+                'put'    => 'update             topic user_id folder_id format mode description type matches_id',
             },
             requirements => {
                 user_id => $ACCEPTED_IDS,
                 folder_id => $ACCEPTED_IDS,
                 format => $ACCEPTED_FORMATS,
             },
-            defaults => { matches_id => '', format => $DEFAULT_FORMAT, },
+            defaults => { topic => $FALSE, matches_id => '', format => $DEFAULT_FORMAT, },
             models => {
                 'user_id' => { type=>'STR', required=>$TRUE, minlength=>1, maxlength=>64 },
                 'folder_id' => { type=>'STR', required=>$TRUE, minlength=>1, maxlength=>64 },
@@ -1158,6 +1159,8 @@ sub routes {
                 'type' => { type=>'STR', required=>$FALSE, default=>'html', values=>'html|graphviz' },
                 'matches_id' => { type=>'STR', required=>$FALSE, default=>'', maxlength=>64 },
                 'strength' => { type=>'NUM', required=>$FALSE, default=>95, minvalue=>1, maxvalue=>100 },
+                # default TF-IDF report, True => Topics report
+                'topic' => { type=>'BOOL', required=>$FALSE, default=>$FALSE },
             },
           }
         ],
