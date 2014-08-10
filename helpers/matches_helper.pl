@@ -3,7 +3,6 @@ use strict;
 use warnings;
 
 use URI::Escape;
-use Data::Dumper;
 
 #require '_folders_helper.pl';
 require 'profiles_helper.pl';
@@ -166,6 +165,7 @@ sub helper_match_topic_profiles {
     		my $pcc_sum = 0;
 		    while (my ($x_topic_id, $x_words) = each(%$terms1)) {
 #		    	$x_mean = $x_words->[3];
+				$max_pcc = 0;
                 while (my ($y_topic_id, $y_words) = each(%$terms2)) {
 #                	$y_mean = $y_words->[3];
 					$x_mean =0 ;
@@ -175,7 +175,6 @@ sub helper_match_topic_profiles {
                 	$xy_sum = 0;
                 	$x_pow_sum = 0;
                 	$y_pow_sum = 0;
-                	$max_pcc = 0;
                 	my @x_weights=();
                 	my @y_weights=();
                 	# $stats->[1] : weights
@@ -792,7 +791,7 @@ sub helper_get_sim_vector {
             }
         }
     }
-
+ 
     # merge two arrays into a single array
     my @rank = ();
     for(my $i=0; $i<scalar(@$ids); $i++) {
@@ -800,7 +799,6 @@ sub helper_get_sim_vector {
     }
     # rank array on similarity scores
     @rank = sort { $b->[1] <=> $a->[1] } @rank;
-    
     # convert array to hash and add in other requested metadata
     for(my $i=0; $i<scalar(@rank); $i++) {
 
@@ -864,7 +862,6 @@ sub helper_get_sim_vector {
             }
         }
     }
-    
     return \@rank;
 }
 
@@ -884,6 +881,35 @@ sub assign_bid_rank {
     return 0;
 }
 
+sub helper_deserialise_topic_pairs {
+	my ($pairs_file) = @_;
+	my $details = JSON->new->decode( util_readFile($pairs_file) );
+	my %pairs = ();
+    for my $item_id (keys %$details) {
+        my $topics= $details->{$item_id}[1];
+        my @topics_list = ();
+        my $topic_x = 0;
+        for my $topic (@$topics) {
+        	my $topic_y=0;
+        	my $y_cnt=0;
+        	my $max_pcc=0;
+        	for my $pcc (@$topic) {
+        		if($pcc > $max_pcc) {
+        			$topic_y = $y_cnt;
+        			$max_pcc = $pcc;
+        		}
+	            $y_cnt++;
+        	}
+        	push(@topics_list, {
+	                'name' => 'topic' . $topic_x . '/topic' . $topic_y,
+	                'contribution' => $max_pcc,
+	            });
+            $topic_x++;
+        }
+        $pairs{$item_id} = \@topics_list;
+    }
+    return (\%pairs, 'foobar');
+}
 
 sub helper_deserialise_pairs {
     #
@@ -932,7 +958,11 @@ sub helper_load_pairs_item {
     my ($matches_path, $profiles_id, $item_id, $settings, $params) = @_;
     my $composite_id = $profiles_id . '-' . $item_id;
     my $item_file = File::Spec->catfile($matches_path, 'TERMS-' . $composite_id . $TERM_FILE_EXTENSION);
-    return helper_deserialise_pairs($item_file);
+    if($params->{'topic'}) {
+    	return helper_deserialise_topic_pairs($item_file);
+    }else{
+    	return helper_deserialise_pairs($item_file);
+	}
 }
 
 

@@ -8,7 +8,7 @@
 <ul>
 [% FOREACH match IN match_items %]
   [% IF match.profiles_id == matches.profiles_id1 %]
-    <li><a href="[% match.filename %]">[% IF match.description != "" %][% match.description %][% ELSE %][% match.id %][% END %]</a></li>
+    <li><a href="[% match.url %]">[% IF match.description != "" %][% match.description %][% ELSE %][% match.id %][% END %]</a></li>
   [% END %]
 [% END %]
 </ul>
@@ -23,7 +23,7 @@
   <ul>
   [% FOREACH match IN match_items %]
     [% IF match.profiles_id == matches.profiles_id2 %]
-      <li><a href="[% match.filename %]">[% IF match.description != "" %][% match.description %][% ELSE %][% match.id %][% END %]</a></li>
+      <li><a href="[% match.url %]">[% IF match.description != "" %][% match.description %][% ELSE %][% match.id %][% END %]</a></li>
     [% END %]
   [% END %]
   </ul>

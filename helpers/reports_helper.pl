@@ -1,7 +1,6 @@
 # reports_helper.pl
 use strict;
 use warnings;
-use Data::Dumper;
 
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
  
@@ -196,6 +195,68 @@ sub helper_topic_reports_matches_html {
     if (performed_render()) {
         return;
     }            
+    
+        # augment metadata with list of items ranked by similarity score
+    for my $item_data (@$match_array) {
+        my ($profiles_id, $item_id) = ($item_data->{'id'} =~ m/^([^-]+)-(.*)$/gxsm);
+        $params->{'full'} = $TRUE;
+        $item_data->{'item'} = helper_get_sim_vector(
+            $matches_info, $profiles_id, $item_id, $settings, $params,
+            $item_ids1, $item_ids2, $sims
+        );
+        if (performed_render()) {
+            return;
+        }
+    }
+    
+
+    my $template_cache_path = File::Spec->catdir($settings->{'CACHE_PATH'}, 'tcc');
+
+    for my $match (@$match_array) {
+        my ($profiles_id, $item_id) = ($match->{'id'} =~ m/^([^-]+)-(.*)$/gxsm);
+        $match->{'profiles_id'} = $profiles_id;
+        my $filename = util_getValidFileName($match->{'id'}) . $HTML_FILE_EXTENSION;
+        $match->{'filename'} = $filename;
+        $match->{'url'} = $settings->{'SITE_URL'} . '/' . $user_id . '/' . $folder_type . '/' . $info->{'id'} . '/' . $filename;
+    }
+    for my $match (@$match_array) {
+        my $filepath = File::Spec->catfile($folder_path, $match->{'filename'});
+        util_writeFile($filepath,
+            render({
+                'COMPILE_EXT' => '.ttc',
+                'COMPILE_DIR' => $template_cache_path,
+                'to_string' => $TRUE,
+                'locals'    => {
+                    'report'    => $info, 
+                    'matches'   => $matches_info, 
+                    'match'     => $match,
+                },
+                'template'  => '_reports/matches_topic_detail.phtml',
+                'layout' => 'report',
+            })
+        );       
+    }
+
+    my $item_id = 'index';
+    my $filename = util_getValidFileName($item_id) . $HTML_FILE_EXTENSION;
+    my $filepath = File::Spec->catfile($folder_path, $filename);
+    util_writeFile($filepath,
+        render({
+            'COMPILE_EXT' => '.ttc',
+            'COMPILE_DIR' => $template_cache_path,
+            'to_string' => $TRUE,
+            'locals'    => {
+                
+                'report'        => $info, 
+                'matches'       => $matches_info, 
+                'match_items'   => $match_array,
+            },
+            'template'  => '_reports/matches_index.phtml',
+            'layout' => 'report',
+        })
+    );
+
+    _create_zip($folder_path, $matches_info->{'id'});
 }
 
 sub helper_reports_matches_html {
