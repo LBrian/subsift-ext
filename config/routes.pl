@@ -499,7 +499,7 @@ sub routes {
             controller => 'profiles',
             actions => {
                 'post'   => 'create_topics         output_model num_topics num_threads num_iterations random_seed num_top_words use_ngram '.
-                			'use_pam alpha beta gamma delta1 delta2 user_id folder_id document_id format description '.
+                			'use_pam alpha beta gamma delta delta1 delta2 user_id folder_id document_id format description '.
                 			'mode ignore_case remove_html remove_stopwords stopwords stem ngrams restrict_vocabulary vocabulary '.
                 			'limit length term_weights term_weight_default threshold sort full',
                 'put'    => 'update_topics         num_topics user_id folder_id document_id format description mode ignore_case remove_html remove_stopwords stopwords stem ngrams restrict_vocabulary vocabulary limit length term_weights term_weight_default threshold recalculate sort full',
@@ -524,6 +524,7 @@ sub routes {
             	'alpha' => { type=>'NUM', required=>$FALSE, default=>50.0, minvalue=>0 },
             	'beta' => { type=>'NUM', required=>$FALSE, default=>0.01, minvalue=>0 },
             	'gamma' => { type=>'NUM', required=>$FALSE, default=>0.01, minvalue=>0 },
+            	'delta' => { type=>'NUM', required=>$FALSE, default=>0.03, minvalue=>0 },
             	'delta1' => { type=>'NUM', required=>$FALSE, default=>0.2, minvalue=>0 },
             	'delta2' => { type=>'NUM', required=>$FALSE, default=>1000.0, minvalue=>0 },
                 'user_id' => { type=>'STR', required=>$TRUE, minlength=>1, maxlength=>64 },

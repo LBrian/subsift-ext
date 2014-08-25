@@ -93,6 +93,7 @@ sub action_profiles_create_topics{
     my $alpha				= $params->{'alpha'};			#smoothing over topic distribution, default is 50.0
     my $beta				= $params->{'beta'};				#smoothing over unigram distribution, default is 0.01
     my $gamma				= $params->{'gamma'};			#smoothing over bigram distribution, default is 0.01
+    my $delta				= $params->{'delta'};			#Topic N-gram smoothing parameter, default is 0.03
     my $delta1				= $params->{'delta1'};			#Topic N-gram smoothing parameter, default is 0.2
     my $delta2				= $params->{'delta2'};			#Topic N-gram smoothing parameter, default is 1000.0
     

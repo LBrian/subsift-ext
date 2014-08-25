@@ -55,6 +55,7 @@ sub helper_topics_from_documents_folder{
     my $alpha				= $profiles_info->{'alpha'};			#smoothing over topic distribution, default is 50.0
     my $beta				= $profiles_info->{'beta'};				#smoothing over unigram distribution, default is 0.01
     my $gamma				= $profiles_info->{'gamma'};			#smoothing over bigram distribution, default is 0.01
+    my $delta				= $profiles_info->{'delta'};			#Topic N-gram smoothing parameter, default is 0.03
     my $delta1				= $profiles_info->{'delta1'};			#Topic N-gram smoothing parameter, default is 0.2
     my $delta2				= $profiles_info->{'delta2'};			#Topic N-gram smoothing parameter, default is 1000.0
 
